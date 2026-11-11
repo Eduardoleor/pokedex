@@ -1,56 +1,72 @@
-# Welcome to your Expo app 👋
+# Pokédex
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+React Native (Expo) app that consumes [PokéAPI](https://pokeapi.co/) to list Pokémon and show the details of each one.
 
-## Get started
+## Requirements
 
-1. Install dependencies
+| Tool     | Version                        |
+| -------- | ------------------------------ |
+| Node.js  | 22.13+ or 24.3+ (see `.nvmrc`) |
+| pnpm     | 10+                            |
+| Expo SDK | 58                             |
 
-   ```bash
-   npm install
-   ```
+Running on a device requires Xcode (iOS), Android Studio (Android) or Expo Go.
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Getting started
 
 ```bash
-npm run reset-project
+nvm use
+pnpm install
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+`pnpm install` also registers the git hooks (Husky). Installing with npm or yarn is blocked.
 
-### Other setup steps
+```bash
+pnpm start     # dev server
+pnpm ios       # iOS simulator
+pnpm android   # Android emulator
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Scripts
 
-## Learn more
+| Script              | Description                                  |
+| ------------------- | -------------------------------------------- |
+| `pnpm lint`         | Run ESLint on the whole project              |
+| `pnpm lint:fix`     | Run ESLint with autofix                      |
+| `pnpm format`       | Format with Prettier                         |
+| `pnpm format:check` | Check formatting without writing             |
+| `pnpm typecheck`    | Type-check with `tsc`                        |
+| `pnpm validate`     | `typecheck` + `lint` + `format:check`        |
+| `pnpm doctor`       | Diagnose dependency and config issues (Expo) |
 
-To learn more about developing your project with Expo, look at the following resources:
+## Code quality
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- **TypeScript** in strict mode, plus `noUncheckedIndexedAccess` and `noImplicitReturns`.
+- **ESLint** (`eslint-config-expo` + project rules): sorted imports, no `any`, no floating promises, hook dependencies and import cycles.
+- **Prettier** runs through ESLint, so there is a single source of formatting.
+- **Husky + lint-staged + commitlint** check formatting, lint, commit messages and branch names before code leaves the machine.
 
-## Join the community
+Rules and workflow are described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
-Join our community of developers creating universal apps.
+## CI/CD
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+| Workflow                                                 | Trigger                  | Purpose                                         |
+| -------------------------------------------------------- | ------------------------ | ----------------------------------------------- |
+| [CI](.github/workflows/ci.yml)                           | PR to `develop` / `main` | Quality checks and Android build                |
+| [Release PR](.github/workflows/release-pr.yml)           | Push to `develop`        | Opens or updates the `develop → main` PR        |
+| [Android Release](.github/workflows/android-release.yml) | Push to `main`           | Builds the Android APK with react-native-deploy |
+| [Dependabot](.github/dependabot.yml)                     | Weekly (Monday)          | Grouped dependency update PR to `develop`       |
+
+iOS builds are **WIP**. Details, cost decisions and required settings are in [docs/ci-cd.md](docs/ci-cd.md).
+
+## Architecture
+
+_Pending._
+
+## Technical decisions
+
+_Pending._
+
+## Pending work and future improvements
+
+- iOS build in CI (WIP).
