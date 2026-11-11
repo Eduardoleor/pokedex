@@ -50,12 +50,12 @@ Rules and workflow are described in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## CI/CD
 
-| Workflow                                                 | Trigger                  | Purpose                                         |
-| -------------------------------------------------------- | ------------------------ | ----------------------------------------------- |
-| [CI](.github/workflows/ci.yml)                           | PR to `develop` / `main` | Quality checks and Android build                |
-| [Release PR](.github/workflows/release-pr.yml)           | Push to `develop`        | Opens or updates the `develop → main` PR        |
-| [Android Release](.github/workflows/android-release.yml) | Push to `main`           | Builds the Android APK with react-native-deploy |
-| [Dependabot](.github/dependabot.yml)                     | Weekly (Monday)          | Grouped dependency update PR to `develop`       |
+| Workflow                                                 | Trigger                  | Purpose                                                      |
+| -------------------------------------------------------- | ------------------------ | ------------------------------------------------------------ |
+| [CI](.github/workflows/ci.yml)                           | PR to `develop` / `main` | Quality checks and Android build                             |
+| [Release PR](.github/workflows/release-pr.yml)           | Push to `develop`        | Opens or updates the `develop → main` PR                     |
+| [Android Release](.github/workflows/android-release.yml) | Push to `main`           | Builds the APK, tags `vX.Y.Z` and publishes a GitHub Release |
+| [Dependabot](.github/dependabot.yml)                     | Weekly (Monday)          | Grouped dependency update PR to `develop`                    |
 
 iOS builds are **WIP**. Details, cost decisions and required settings are in [docs/ci-cd.md](docs/ci-cd.md).
 
@@ -70,3 +70,4 @@ _Pending._
 ## Pending work and future improvements
 
 - iOS build in CI (WIP).
+- The APK `versionName` comes from `app.json`; it is not synced with the release tag yet.

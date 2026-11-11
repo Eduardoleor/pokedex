@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Prints a Markdown summary of the commits in HEAD_REF that are not yet in BASE_REF.
+# Prints a Markdown summary of the commits in HEAD that are not yet in BASE.
+# Usage: release-notes.sh <base> <head>
 set -euo pipefail
 
 base="${1:-origin/main}"
@@ -24,7 +25,14 @@ total="$(echo "$commits" | wc -l | tr -d ' ')"
 stat="$(git diff --shortstat "$base...$head" | sed 's/^ //')"
 
 printf '## Release summary\n\n'
-printf '%s commits from `%s` into `%s`. %s.\n\n' "$total" "${head#origin/}" "${base#origin/}" "$stat"
+base_label="${base#origin/}"
+if [[ "$base_label" =~ ^[0-9a-f]{40}$ ]]; then
+  base_label="${base_label:0:7}"
+fi
+noun="commits"
+[ "$total" = "1" ] && noun="commit"
+
+printf '%s %s (`%s..%s`). %s.\n\n' "$total" "$noun" "$base_label" "${head#origin/}" "$stat"
 
 section 'Features' '^feat(\\(.*\\))?!?:'
 section 'Fixes' '^fix(\\(.*\\))?!?:'
