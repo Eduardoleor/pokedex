@@ -10,6 +10,22 @@ pnpm expo install <package>
 
 This resolves the version that matches the SDK. Dev tooling not tied to the SDK is installed with `pnpm add -D`.
 
+## Consistent formatting
+
+`pnpm install` is the only setup step. Everything below is versioned in the repo, so every clone formats code the same way and no commit carries unrelated formatting changes:
+
+| File                       | What it guarantees                                                                              |
+| -------------------------- | ----------------------------------------------------------------------------------------------- |
+| `package.json` (`prepare`) | Installs the Husky hooks on `pnpm install`                                                      |
+| `.npmrc` (`save-exact`)    | New dependencies are pinned to an exact version                                                 |
+| `package.json`             | Prettier, ESLint and their plugins are pinned to exact versions                                 |
+| `.gitattributes`           | LF line endings on every OS (no CRLF diffs from Windows)                                        |
+| `.editorconfig`            | Indentation, charset, final newline and trailing whitespace for any editor                      |
+| `.vscode/settings.json`    | Format on save with the project's Prettier, ESLint fixes on save, no competing import organizer |
+| `.vscode/extensions.json`  | Recommends the ESLint, Prettier and EditorConfig extensions                                     |
+
+As a final guard, lint-staged formats staged files on commit and CI fails on any unformatted file.
+
 ## Git Flow
 
 | Branch      | From      | Into                 | Purpose                          |
