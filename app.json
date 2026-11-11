@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "pokedex-app",
+    "name": "Pokédex",
     "slug": "pokedex-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,9 +8,11 @@
     "scheme": "pokedexapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/expo.icon",
+      "bundleIdentifier": "com.eduardoleor.pokedex"
     },
     "android": {
+      "package": "com.eduardoleor.pokedex",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",

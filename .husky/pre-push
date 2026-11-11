@@ -1,0 +1,10 @@
+branch="$(git rev-parse --abbrev-ref HEAD)"
+pattern='^(main|develop|(feature|bugfix|release|hotfix)/[a-z0-9._-]+)$'
+
+if ! echo "$branch" | grep -Eq "$pattern"; then
+  echo "Branch \"$branch\" does not follow Git Flow naming."
+  echo "Allowed: main, develop, feature/*, bugfix/*, release/*, hotfix/*"
+  exit 1
+fi
+
+pnpm validate

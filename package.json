@@ -1,7 +1,37 @@
 {
   "name": "pokedex-app",
   "version": "1.0.0",
+  "private": true,
   "main": "expo-router/entry",
+  "packageManager": "pnpm@10.33.0",
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0",
+    "pnpm": ">=10"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "prepare": "husky",
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "lint": "expo lint .",
+    "lint:fix": "expo lint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "validate": "pnpm typecheck && pnpm lint && pnpm format:check",
+    "doctor": "pnpm dlx expo-doctor@latest"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix --max-warnings=0",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
   "dependencies": {
     "@expo/ui": "~58.0.28",
     "expo": "~58.0.24",
@@ -28,16 +58,17 @@
     "react-native-worklets": "0.13.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
     "@types/react": "~19.3.0",
+    "eslint": "9.39.5",
+    "eslint-config-expo": "~58.0.4",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-prettier": "5.5.7",
+    "eslint-plugin-simple-import-sort": "14.0.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "3.10.0",
     "typescript": "~6.0.3"
-  },
-  "scripts": {
-    "start": "expo start",
-    "reset-project": "node ./scripts/reset-project.js",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "lint": "expo lint"
-  },
-  "private": true
+  }
 }
