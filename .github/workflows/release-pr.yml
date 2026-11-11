@@ -1,0 +1,49 @@
+name: Release PR
+
+on:
+  push:
+    branches: [develop]
+
+concurrency:
+  group: release-pr
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  open-or-update:
+    name: Open or update develop → main
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build release notes
+        id: notes
+        run: |
+          .github/scripts/release-notes.sh origin/main origin/develop > notes.md
+          if [ -s notes.md ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create or update pull request
+        if: steps.notes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="Release $(date -u +%Y-%m-%d)"
+          number="$(gh pr list --base main --head develop --state open --json number --jq '.[0].number')"
+
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --body-file notes.md
+            echo "Updated #$number" >> "$GITHUB_STEP_SUMMARY"
+          else
+            gh pr create --base main --head develop --title "$title" --body-file notes.md
+            echo "Created release PR" >> "$GITHUB_STEP_SUMMARY"
+          fi

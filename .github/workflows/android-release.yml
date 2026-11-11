@@ -1,0 +1,42 @@
+name: Android Release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+  workflow_dispatch:
+
+concurrency:
+  group: android-release
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  dispatch:
+    name: Dispatch Android build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      # react-native-deploy resolves the eas.json profile and dispatches eas-build.yml,
+      # which does the actual prebuild + Gradle build and uploads the APK as an artifact.
+      - name: Start build
+        env:
+          EAS_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DO_NOT_TRACK: '1'
+        run: >
+          npx --yes @react-native-feel/deploy@0.3.0 build
+          --platform android
+          --profile preview
+          --no-wait

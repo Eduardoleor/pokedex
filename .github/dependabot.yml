@@ -1,0 +1,51 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: weekly
+      day: monday
+      time: '08:00'
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: chore
+      include: scope
+    groups:
+      npm:
+        patterns: ['*']
+    ignore:
+      # Major bumps and Expo SDK-bound packages are upgraded by hand with
+      # `pnpm expo install --fix` so versions stay aligned with the SDK.
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'expo'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: 'expo-*'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: '@expo/*'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: 'react'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: 'react-dom'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: 'react-native'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: 'react-native-*'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: '@types/react'
+        update-types: ['version-update:semver-minor']
+      - dependency-name: 'typescript'
+        update-types: ['version-update:semver-minor']
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: develop
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    groups:
+      actions:
+        patterns: ['*']
