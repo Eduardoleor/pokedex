@@ -7,6 +7,7 @@ import {
   useMemo,
   useReducer,
   useRef,
+  useState,
 } from 'react';
 import { AppState } from 'react-native';
 
@@ -32,6 +33,8 @@ export interface PokemonListContextValue extends ListState {
 
 interface PokemonDetailsContextValue {
   details: DetailsState;
+  /** Ids whose detail and artwork are saved on the device. */
+  savedIds: ReadonlySet<number>;
   loadDetail: (id: number, options?: { silent?: boolean }) => void;
 }
 
@@ -42,6 +45,7 @@ export function PokemonDataProvider({ children }: { children: ReactNode }) {
   const { getPokemonPage, getPokemonDetail } = useDependencies();
   const [list, dispatchList] = useReducer(listReducer, initialListState);
   const [details, dispatchDetails] = useReducer(detailsReducer, {});
+  const [savedIds, setSavedIds] = useState<ReadonlySet<number>>(() => new Set());
 
   const listRequest = useRef<{ controller: AbortController; mode: ListLoadMode } | null>(null);
   const detailRequests = useRef(new Map<number, AbortController>());
@@ -157,14 +161,23 @@ export function PokemonDataProvider({ children }: { children: ReactNode }) {
     if (list.isOffline) {
       return undefined;
     }
-    const pending = list.items.map((item) => item.id).filter((id) => !prefetched.current.has(id));
+    const started = prefetched.current;
+    const pending = list.items.filter((item) => !started.has(item.id));
     if (pending.length === 0) {
       return undefined;
     }
-    pending.forEach((id) => prefetched.current.add(id));
+    pending.forEach((item) => started.add(item.id));
+    const finished = new Set<number>();
     const controller = new AbortController();
-    void prefetchDetails(pending, getPokemonDetail, controller.signal);
-    return () => controller.abort();
+    void prefetchDetails(pending, getPokemonDetail, controller.signal, (id) => {
+      finished.add(id);
+      setSavedIds((current) => (current.has(id) ? current : new Set(current).add(id)));
+    });
+    return () => {
+      controller.abort();
+      // Let a later run pick up whatever this one did not finish.
+      pending.forEach((item) => !finished.has(item.id) && started.delete(item.id));
+    };
   }, [list.items, list.isOffline, getPokemonDetail]);
 
   const busy = list.status === RequestStatus.Loading || list.isRefreshing || list.isLoadingMore;
@@ -201,8 +214,8 @@ export function PokemonDataProvider({ children }: { children: ReactNode }) {
   );
 
   const detailsValue = useMemo<PokemonDetailsContextValue>(
-    () => ({ details, loadDetail: (id, options) => void loadDetail(id, options) }),
-    [details, loadDetail],
+    () => ({ details, savedIds, loadDetail: (id, options) => void loadDetail(id, options) }),
+    [details, savedIds, loadDetail],
   );
 
   return (
