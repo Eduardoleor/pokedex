@@ -6,10 +6,17 @@ import { SymbolView } from 'expo-symbols';
 import { PokemonType } from '@/domain/enums';
 import type { AppError } from '@/domain/errors';
 import type { PokemonSummary } from '@/domain/models';
-
-import { usePokemonIdsByType } from '../../hooks/use-pokemon-ids-by-type';
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { MIN_TOUCH_SIZE, typeColors, useTheme } from '../../theme';
+import { Icon, Pokeball, Spinner, Text } from '@/presentation/components/atoms';
+import {
+  type FilterChip,
+  FilterChips,
+  SearchField,
+  StatusMessage,
+} from '@/presentation/components/molecules';
+import { PokemonGrid } from '@/presentation/components/organisms/pokemon-grid';
+import { usePokemonIdsByType } from '@/presentation/hooks/use-pokemon-ids-by-type';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import { MIN_TOUCH_SIZE, typeColors, useTheme } from '@/presentation/theme';
 import {
   formatName,
   type Generation,
@@ -17,10 +24,7 @@ import {
   isInGeneration,
   matchesPokemon,
   normalizeSearch,
-} from '../../utils';
-import { Icon, Pokeball, Spinner, Text } from '../atoms';
-import { type FilterChip, FilterChips, SearchField, StatusMessage } from '../molecules';
-import { PokemonGrid } from './pokemon-grid';
+} from '@/presentation/utils';
 
 export interface PokemonBrowserProps {
   items: PokemonSummary[];

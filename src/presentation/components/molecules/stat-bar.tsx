@@ -1,10 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
 import type { PokemonStat } from '@/domain/models';
-
-import { useTheme } from '../../theme';
-import { formatStatName } from '../../utils';
-import { Text } from '../atoms';
+import { Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
+import { formatStatName } from '@/presentation/utils';
 
 /** Highest base stat in the games (Blissey's HP). */
 const MAX_STAT = 255;

@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, useColorScheme, View } from 'react-native';
 
-import { createTheme } from '../../theme';
-import { haptics } from '../../utils';
+import { createTheme } from '@/presentation/theme';
+import { haptics } from '@/presentation/utils';
 
 export interface CrashScreenProps {
   error: Error;

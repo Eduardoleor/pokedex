@@ -3,8 +3,7 @@ import { Image } from 'expo-image';
 import type { GetPokemonDetail } from '@/application/use-cases';
 import { toAppError } from '@/domain/errors';
 import type { PokemonSummary } from '@/domain/models';
-
-import { isOfflineError } from './is-offline-error';
+import { isOfflineError } from '@/presentation/providers/pokemon-data/is-offline-error';
 
 const CONCURRENCY = 2;
 

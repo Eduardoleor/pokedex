@@ -1,9 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
 import type { PokemonSummary } from '@/domain/models';
-
-import { useTheme } from '../../theme';
-import { RemoteImage } from '../atoms';
+import { RemoteImage } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 /**
  * Full-screen blurred copy of the featured artwork, so the background follows

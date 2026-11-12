@@ -8,12 +8,12 @@ import {
   View,
 } from 'react-native';
 
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import type { ViewHandle } from '../../types';
-import { haptics } from '../../utils';
-import { Pokeball } from '../atoms';
-import { ballFillDiameter } from '../atoms/pokeball-geometry';
-import { CatchBurst, GrowingBall, StickerLabel } from '../molecules';
+import { Pokeball } from '@/presentation/components/atoms';
+import { ballFillDiameter } from '@/presentation/components/atoms/pokeball-geometry';
+import { CatchBurst, GrowingBall, StickerLabel } from '@/presentation/components/molecules';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import type { ViewHandle } from '@/presentation/types';
+import { haptics } from '@/presentation/utils';
 
 const DEFAULT_BALL_SIZE = 92;
 /** Upward speed (px/ms) or distance (px) that counts as a throw. */

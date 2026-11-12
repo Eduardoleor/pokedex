@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from 'react-native';
 
-import { MIN_TOUCH_SIZE } from '../../theme';
-import { TrainerAvatar } from '../atoms';
+import { TrainerAvatar } from '@/presentation/components/atoms';
+import { MIN_TOUCH_SIZE } from '@/presentation/theme';
 
 /** The trainer's face in the header: opens the profile. */
 export function ProfileHeaderButton({ onPress }: { onPress: () => void }) {

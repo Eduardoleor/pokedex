@@ -1,4 +1,4 @@
-import { GENERATIONS } from './generations';
+import { GENERATIONS } from '@/presentation/utils/generations';
 
 const DAY = 24 * 60 * 60 * 1000;
 

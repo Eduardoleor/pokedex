@@ -3,8 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useDependencies } from '@/di';
 import { type AppError, ErrorKind, toAppError } from '@/domain/errors';
 import type { PokemonDetail } from '@/domain/models';
-
-import type { CryStatus } from '../types';
+import type { CryStatus } from '@/presentation/types';
 
 export function usePokemonCry(pokemon: PokemonDetail | undefined, isOffline: boolean) {
   const { playPokemonCry } = useDependencies();

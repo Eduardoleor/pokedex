@@ -16,12 +16,19 @@ import { Image } from 'expo-image';
 import { DEFAULT_CACHE_POLICY } from '@/application/cache';
 import { useDependencies } from '@/di';
 import { ErrorKind, toAppError } from '@/domain/errors';
-
-import { RequestStatus } from '../../types';
-import { useNetwork } from '../network-provider';
-import { detailsReducer, type DetailsState } from './details-reducer';
-import { initialListState, type ListLoadMode, listReducer, type ListState } from './list-reducer';
-import { prefetchDetails } from './prefetch-details';
+import { useNetwork } from '@/presentation/providers/network-provider';
+import {
+  detailsReducer,
+  type DetailsState,
+} from '@/presentation/providers/pokemon-data/details-reducer';
+import {
+  initialListState,
+  type ListLoadMode,
+  listReducer,
+  type ListState,
+} from '@/presentation/providers/pokemon-data/list-reducer';
+import { prefetchDetails } from '@/presentation/providers/pokemon-data/prefetch-details';
+import { RequestStatus } from '@/presentation/types';
 
 export const PAGE_SIZE = 20;
 const OFFLINE_RETRY_MS = 30_000;

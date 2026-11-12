@@ -3,8 +3,8 @@ import { Animated, StyleSheet, View } from 'react-native';
 
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme } from '../../theme';
-import { Icon, Text } from '../atoms';
+import { Icon, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 const BACK_ONLINE_MS = 2500;
 const HIDDEN_OFFSET = 24;

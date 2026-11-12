@@ -1,4 +1,4 @@
-import type { HttpMethod } from './http-method';
+import type { HttpMethod } from '@/infrastructure/http/http-method';
 
 export type QueryValue = string | number | boolean | null | undefined;
 export type QueryParams = Record<string, QueryValue | QueryValue[]>;

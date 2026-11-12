@@ -1,15 +1,14 @@
-import { AppError, ErrorKind } from '@/domain/errors';
-import type { PokemonDetail } from '@/domain/models';
-import type { CacheStore, PokemonRepository } from '@/domain/ports';
-import type { Cached } from '@/domain/types';
-
 import {
   cachedQuery,
   type CachePolicy,
   DEFAULT_CACHE_POLICY,
   isFresh,
   type QueryOptions,
-} from '../cache';
+} from '@/application/cache';
+import { AppError, ErrorKind } from '@/domain/errors';
+import type { PokemonDetail } from '@/domain/models';
+import type { CacheStore, PokemonRepository } from '@/domain/ports';
+import type { Cached } from '@/domain/types';
 
 export class GetPokemonDetail {
   constructor(

@@ -1,2 +1,2 @@
-export { POKEAPI_BASE_URL } from './config';
-export { PokeApiPokemonRepository } from './pokeapi-pokemon-repository';
+export { POKEAPI_BASE_URL } from '@/infrastructure/pokeapi/config';
+export { PokeApiPokemonRepository } from '@/infrastructure/pokeapi/pokeapi-pokemon-repository';

@@ -1,6 +1,6 @@
-import type { ColorScheme } from '../types';
-import { type ColorPalette, palettes } from './palette';
-import { radius, spacing, typography } from './tokens';
+import { type ColorPalette, palettes } from '@/presentation/theme/palette';
+import { radius, spacing, typography } from '@/presentation/theme/tokens';
+import type { ColorScheme } from '@/presentation/types';
 
 export interface Theme {
   scheme: ColorScheme;

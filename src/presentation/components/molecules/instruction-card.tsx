@@ -1,8 +1,8 @@
 import { View } from 'react-native';
 
-import type { OnboardingStep } from '../../content/onboarding-steps';
-import { useTheme } from '../../theme';
-import { Icon, Text } from '../atoms';
+import { Icon, Text } from '@/presentation/components/atoms';
+import type { OnboardingStep } from '@/presentation/content/onboarding-steps';
+import { useTheme } from '@/presentation/theme';
 
 export function InstructionCard({ step, width }: { step: OnboardingStep; width: number }) {
   const { theme } = useTheme();

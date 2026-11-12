@@ -1,4 +1,7 @@
-export type { NamedApiResourceDto, PaginatedResponseDto } from './common.dto';
+export type {
+  NamedApiResourceDto,
+  PaginatedResponseDto,
+} from '@/infrastructure/pokeapi/dtos/common.dto';
 export type {
   PokemonAbilitySlotDto,
   PokemonCriesDto,
@@ -6,5 +9,5 @@ export type {
   PokemonSpritesDto,
   PokemonStatDto,
   PokemonTypeSlotDto,
-} from './pokemon.dto';
-export type { TypeDto } from './type.dto';
+} from '@/infrastructure/pokeapi/dtos/pokemon.dto';
+export type { TypeDto } from '@/infrastructure/pokeapi/dtos/type.dto';

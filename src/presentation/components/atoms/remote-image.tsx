@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { Image, type ImageProps } from 'expo-image';
 
-import { useTheme } from '../../theme';
-import { Icon } from './icon';
+import { Icon } from '@/presentation/components/atoms/icon';
+import { useTheme } from '@/presentation/theme';
 
 export interface RemoteImageProps extends Omit<ImageProps, 'source'> {
   uri: string;

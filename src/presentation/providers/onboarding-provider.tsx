@@ -11,8 +11,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 
 import { useDependencies } from '@/di';
-
-import { OnboardingStatus } from '../types';
+import { OnboardingStatus } from '@/presentation/types';
 
 const COMPLETED_KEY = 'onboarding-completed';
 

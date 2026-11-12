@@ -1,9 +1,9 @@
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import type { CaughtPokemon } from '../../../providers/caught-provider';
-import { useTheme } from '../../../theme';
-import { formatDexNumber, formatName, formatShortDate } from '../../../utils';
-import { Pokeball, RemoteImage, Text } from '../../atoms';
+import { Pokeball, RemoteImage, Text } from '@/presentation/components/atoms';
+import type { CaughtPokemon } from '@/presentation/providers/caught-provider';
+import { useTheme } from '@/presentation/theme';
+import { formatDexNumber, formatName, formatShortDate } from '@/presentation/utils';
 
 const CARD_WIDTH = 132;
 

@@ -1,6 +1,6 @@
 import { StyleSheet, View, type ViewProps } from 'react-native';
 
-import { useTheme } from '../../theme';
+import { useTheme } from '@/presentation/theme';
 
 export interface SurfaceProps extends ViewProps {
   padded?: boolean;

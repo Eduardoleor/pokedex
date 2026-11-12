@@ -1,17 +1,50 @@
-export { CatchCelebration, type CatchCelebrationProps } from './catch-celebration';
-export { CatchPanel, type CatchPanelProps } from './catch-panel';
-export { CrashScreen, type CrashScreenProps } from './crash-screen';
-export { InstructionsCarousel, type InstructionsCarouselProps } from './instructions-carousel';
-export { OnboardingBackdrop } from './onboarding-backdrop';
-export { OnboardingHero, type OnboardingHeroProps } from './onboarding-hero';
-export { PokeballLauncher, type PokeballLauncherProps } from './pokeball-launcher';
-export { PokeballReveal } from './pokeball-reveal';
-export { PokemonBrowser, type PokemonBrowserProps } from './pokemon-browser';
-export { PokemonCard, type PokemonCardProps } from './pokemon-card';
-export { PokemonDetailSkeleton } from './pokemon-detail-skeleton';
-export { PokemonDetailView, type PokemonDetailViewProps } from './pokemon-detail-view';
-export { PokemonGrid, type PokemonGridProps } from './pokemon-grid';
-export { PokemonGridSkeleton } from './pokemon-grid-skeleton';
-export { PokemonStrip, type PokemonStripProps } from './pokemon-strip';
-export * from './trainer';
-export { GenerationChart, WeeklyCatchesChart } from './trainer-charts';
+export {
+  CatchCelebration,
+  type CatchCelebrationProps,
+} from '@/presentation/components/organisms/catch-celebration';
+export { CatchPanel, type CatchPanelProps } from '@/presentation/components/organisms/catch-panel';
+export {
+  CrashScreen,
+  type CrashScreenProps,
+} from '@/presentation/components/organisms/crash-screen';
+export {
+  InstructionsCarousel,
+  type InstructionsCarouselProps,
+} from '@/presentation/components/organisms/instructions-carousel';
+export { OnboardingBackdrop } from '@/presentation/components/organisms/onboarding-backdrop';
+export {
+  OnboardingHero,
+  type OnboardingHeroProps,
+} from '@/presentation/components/organisms/onboarding-hero';
+export {
+  PokeballLauncher,
+  type PokeballLauncherProps,
+} from '@/presentation/components/organisms/pokeball-launcher';
+export { PokeballReveal } from '@/presentation/components/organisms/pokeball-reveal';
+export {
+  PokemonBrowser,
+  type PokemonBrowserProps,
+} from '@/presentation/components/organisms/pokemon-browser';
+export {
+  PokemonCard,
+  type PokemonCardProps,
+} from '@/presentation/components/organisms/pokemon-card';
+export { PokemonDetailSkeleton } from '@/presentation/components/organisms/pokemon-detail-skeleton';
+export {
+  PokemonDetailView,
+  type PokemonDetailViewProps,
+} from '@/presentation/components/organisms/pokemon-detail-view';
+export {
+  PokemonGrid,
+  type PokemonGridProps,
+} from '@/presentation/components/organisms/pokemon-grid';
+export { PokemonGridSkeleton } from '@/presentation/components/organisms/pokemon-grid-skeleton';
+export {
+  PokemonStrip,
+  type PokemonStripProps,
+} from '@/presentation/components/organisms/pokemon-strip';
+export * from '@/presentation/components/organisms/trainer';
+export {
+  GenerationChart,
+  WeeklyCatchesChart,
+} from '@/presentation/components/organisms/trainer-charts';

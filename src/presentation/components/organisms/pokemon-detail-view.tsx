@@ -5,9 +5,17 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { PokemonType } from '@/domain/enums';
 import type { PokemonDetail } from '@/domain/models';
-
-import { pokeball, typeColors, useTheme, wordmark } from '../../theme';
-import type { ViewHandle } from '../../types';
+import {
+  Icon,
+  type IconName,
+  Pokeball,
+  RemoteImage,
+  Surface,
+  Text,
+} from '@/presentation/components/atoms';
+import { Section, StatBar, TypeBadge } from '@/presentation/components/molecules';
+import { pokeball, typeColors, useTheme, wordmark } from '@/presentation/theme';
+import type { ViewHandle } from '@/presentation/types';
 import {
   formatDexNumber,
   formatHeight,
@@ -16,9 +24,7 @@ import {
   formatWeight,
   haptics,
   typeMatchups,
-} from '../../utils';
-import { Icon, type IconName, Pokeball, RemoteImage, Surface, Text } from '../atoms';
-import { Section, StatBar, TypeBadge } from '../molecules';
+} from '@/presentation/utils';
 
 const OVERSCROLL = 1000;
 /** Height of the transparent navigation bar the hero sits under. */

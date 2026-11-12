@@ -1,9 +1,9 @@
 import { Pressable, type PressableProps, StyleSheet, View } from 'react-native';
 
-import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
-import { Icon, type IconName } from './icon';
-import { Spinner } from './spinner';
-import { Text } from './text';
+import { Icon, type IconName } from '@/presentation/components/atoms/icon';
+import { Spinner } from '@/presentation/components/atoms/spinner';
+import { Text } from '@/presentation/components/atoms/text';
+import { MIN_TOUCH_SIZE, useTheme } from '@/presentation/theme';
 
 type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 

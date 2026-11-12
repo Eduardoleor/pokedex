@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../../theme';
-import { Icon, type IconName, Spinner, Surface, Text } from '../../atoms';
+import { Icon, type IconName, Spinner, Surface, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 export interface SettingsAction {
   key: string;

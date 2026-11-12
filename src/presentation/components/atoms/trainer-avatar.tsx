@@ -2,9 +2,9 @@ import { StyleSheet, View } from 'react-native';
 
 import { Image } from 'expo-image';
 
-import { pokeball, wordmark } from '../../theme';
+import { pokeball, wordmark } from '@/presentation/theme';
 
-const TRAINER = require('../../../../assets/images/trainer.svg') as number;
+const TRAINER = require('@/../assets/images/trainer.svg') as number;
 
 /** Size of the artwork's own canvas, so crops stay proportional. */
 const ART_WIDTH = 273.32;

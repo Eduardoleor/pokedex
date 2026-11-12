@@ -1,8 +1,8 @@
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { pokeball, wordmark } from '../../theme';
-import { Icon } from '../atoms';
-import { StickerLabel } from '../molecules';
+import { Icon } from '@/presentation/components/atoms';
+import { StickerLabel } from '@/presentation/components/molecules';
+import { pokeball, wordmark } from '@/presentation/theme';
 
 /** Sparkles placed around the artwork, as angle (deg) and distance (0–1 of the radius). */
 const SPARKS = [

@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../theme';
-import type { DayCount, GenerationCount } from '../../utils';
-import { Surface, Text } from '../atoms';
+import { Surface, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
+import type { DayCount, GenerationCount } from '@/presentation/utils';
 
 const CHART_HEIGHT = 120;
 

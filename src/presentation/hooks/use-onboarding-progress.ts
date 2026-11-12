@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
 
+import { usePacedReveal } from '@/presentation/hooks/use-paced-reveal';
 import {
   PAGE_SIZE,
   usePokemonDetailsContext,
   usePokemonListContext,
-} from '../providers/pokemon-data';
-import { RequestStatus } from '../types';
-import { usePacedReveal } from './use-paced-reveal';
+} from '@/presentation/providers/pokemon-data';
+import { RequestStatus } from '@/presentation/types';
 
 /** First page of Pokémon and how many of them are already saved for offline use. */
 export function useOnboardingProgress() {

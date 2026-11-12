@@ -2,7 +2,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 
 import Svg, { Path } from 'react-native-svg';
 
-import { pokeball, wordmark } from '../../theme';
+import { pokeball, wordmark } from '@/presentation/theme';
 
 const SPARKS = 8;
 const SPARK_SIZE = 14;

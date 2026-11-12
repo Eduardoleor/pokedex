@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
-import type { CryStatus } from '../../types';
-import { Icon, Spinner } from '../atoms';
+import { Icon, Spinner } from '@/presentation/components/atoms';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import { MIN_TOUCH_SIZE, useTheme } from '@/presentation/theme';
+import type { CryStatus } from '@/presentation/types';
 
 export interface CryIconButtonProps {
   status: CryStatus;

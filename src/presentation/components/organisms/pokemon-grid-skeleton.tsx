@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../theme';
-import { Skeleton, Surface } from '../atoms';
-import { useGridColumns } from './use-grid-columns';
+import { Skeleton, Surface } from '@/presentation/components/atoms';
+import { useGridColumns } from '@/presentation/components/organisms/use-grid-columns';
+import { useTheme } from '@/presentation/theme';
 
 const PLACEHOLDERS = 8;
 

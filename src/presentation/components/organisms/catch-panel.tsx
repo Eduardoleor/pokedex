@@ -2,14 +2,13 @@ import { type RefObject, useCallback, useState } from 'react';
 import { Animated, Easing, StyleSheet, View } from 'react-native';
 
 import type { PokemonSummary } from '@/domain/models';
-
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { useTheme } from '../../theme';
-import type { ViewHandle } from '../../types';
-import { formatName, haptics } from '../../utils';
-import { Button, Pokeball, Text } from '../atoms';
-import { StickerLabel } from '../molecules';
-import { PokeballLauncher } from './pokeball-launcher';
+import { Button, Pokeball, Text } from '@/presentation/components/atoms';
+import { StickerLabel } from '@/presentation/components/molecules';
+import { PokeballLauncher } from '@/presentation/components/organisms/pokeball-launcher';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import { useTheme } from '@/presentation/theme';
+import type { ViewHandle } from '@/presentation/types';
+import { formatName, haptics } from '@/presentation/utils';
 
 const BALL_SIZE = 64;
 

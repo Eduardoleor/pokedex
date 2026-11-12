@@ -2,10 +2,9 @@ import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import type { PokemonSummary } from '@/domain/models';
-
-import { useTheme } from '../../theme';
-import { formatDexNumber, formatName } from '../../utils';
-import { Pokeball, RemoteImage, Text } from '../atoms';
+import { Pokeball, RemoteImage, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
+import { formatDexNumber, formatName } from '@/presentation/utils';
 
 export interface PokemonCardProps {
   pokemon: PokemonSummary;

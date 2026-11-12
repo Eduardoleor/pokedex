@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Animated, Easing, type StyleProp, View, type ViewStyle } from 'react-native';
 
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { Pokeball } from './pokeball';
+import { Pokeball } from '@/presentation/components/atoms/pokeball';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
 
 const SIZES = { small: 22, large: 40 } as const;
 

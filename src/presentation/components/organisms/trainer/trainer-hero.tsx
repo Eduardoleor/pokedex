@@ -1,9 +1,9 @@
 import { StyleSheet, View } from 'react-native';
 
-import { pokeball, useTheme, wordmark } from '../../../theme';
-import type { TrainerRank } from '../../../utils';
-import { Icon, Text, TrainerPortrait } from '../../atoms';
-import { StickerLabel } from '../../molecules';
+import { Icon, Text, TrainerPortrait } from '@/presentation/components/atoms';
+import { StickerLabel } from '@/presentation/components/molecules';
+import { pokeball, useTheme, wordmark } from '@/presentation/theme';
+import type { TrainerRank } from '@/presentation/utils';
 
 const OVERSCROLL = 1000;
 /** How far the content below rises over the band. */

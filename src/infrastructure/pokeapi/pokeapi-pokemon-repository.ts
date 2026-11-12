@@ -2,10 +2,18 @@ import type { PokemonType } from '@/domain/enums';
 import type { PokemonDetail, PokemonSummary } from '@/domain/models';
 import type { PokemonRepository } from '@/domain/ports';
 import type { Page, PageRequest } from '@/domain/types';
-
-import type { HttpClient } from '../http';
-import type { NamedApiResourceDto, PaginatedResponseDto, PokemonDto, TypeDto } from './dtos';
-import { extractId, toPokemonDetail, toPokemonPage } from './mappers/pokemon.mapper';
+import type { HttpClient } from '@/infrastructure/http';
+import type {
+  NamedApiResourceDto,
+  PaginatedResponseDto,
+  PokemonDto,
+  TypeDto,
+} from '@/infrastructure/pokeapi/dtos';
+import {
+  extractId,
+  toPokemonDetail,
+  toPokemonPage,
+} from '@/infrastructure/pokeapi/mappers/pokemon.mapper';
 
 export class PokeApiPokemonRepository implements PokemonRepository {
   constructor(private readonly http: HttpClient) {}

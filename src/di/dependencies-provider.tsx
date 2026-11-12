@@ -1,6 +1,6 @@
 import { createContext, type ReactNode, useContext, useState } from 'react';
 
-import { createDependencies, type Dependencies } from './container';
+import { createDependencies, type Dependencies } from '@/di/container';
 
 const DependenciesContext = createContext<Dependencies | null>(null);
 

@@ -1,8 +1,12 @@
+import {
+  cachedQuery,
+  type CachePolicy,
+  DEFAULT_CACHE_POLICY,
+  type QueryOptions,
+} from '@/application/cache';
 import type { PokemonType } from '@/domain/enums';
 import type { CacheStore, PokemonRepository } from '@/domain/ports';
 import type { Cached } from '@/domain/types';
-
-import { cachedQuery, type CachePolicy, DEFAULT_CACHE_POLICY, type QueryOptions } from '../cache';
 
 /** Which Pokémon share a type, saved like the rest of PokéAPI data so it works offline. */
 export class GetPokemonIdsByType {

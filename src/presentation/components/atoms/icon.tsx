@@ -1,7 +1,7 @@
 import type { ReactElement } from 'react';
 import Svg, { Circle, Line, Path, Rect } from 'react-native-svg';
 
-import { type ColorPalette, useTheme } from '../../theme';
+import { type ColorPalette, useTheme } from '@/presentation/theme';
 
 /**
  * Stroke icons drawn on a 24×24 grid (2 pt stroke, round caps), so they render

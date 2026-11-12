@@ -1,5 +1,18 @@
-export { CompletionCard, type CompletionCardProps } from './completion-card';
-export { RecentCatches, type RecentCatchesProps } from './recent-catches';
-export { type SettingsAction, SettingsGroup } from './settings-group';
-export { StatTiles } from './stat-tiles';
-export { TRAINER_HERO_OVERLAP, TrainerHero, type TrainerHeroProps } from './trainer-hero';
+export {
+  CompletionCard,
+  type CompletionCardProps,
+} from '@/presentation/components/organisms/trainer/completion-card';
+export {
+  RecentCatches,
+  type RecentCatchesProps,
+} from '@/presentation/components/organisms/trainer/recent-catches';
+export {
+  type SettingsAction,
+  SettingsGroup,
+} from '@/presentation/components/organisms/trainer/settings-group';
+export { StatTiles } from '@/presentation/components/organisms/trainer/stat-tiles';
+export {
+  TRAINER_HERO_OVERLAP,
+  TrainerHero,
+  type TrainerHeroProps,
+} from '@/presentation/components/organisms/trainer/trainer-hero';

@@ -3,9 +3,9 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { SymbolView } from 'expo-symbols';
 import type { ComponentProps } from 'react';
 
-import { useTheme } from '../../theme';
-import { haptics } from '../../utils';
-import { Icon, type IconName, Text } from '../atoms';
+import { Icon, type IconName, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
+import { haptics } from '@/presentation/utils';
 
 export interface FilterChip<T> {
   value: T;

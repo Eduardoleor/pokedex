@@ -1,9 +1,9 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
-import { ThemePreference } from '../../types';
-import { haptics } from '../../utils';
-import { Icon, type IconName, Text } from '../atoms';
+import { Icon, type IconName, Text } from '@/presentation/components/atoms';
+import { MIN_TOUCH_SIZE, useTheme } from '@/presentation/theme';
+import { ThemePreference } from '@/presentation/types';
+import { haptics } from '@/presentation/utils';
 
 const OPTIONS: { value: ThemePreference; label: string; icon: IconName }[] = [
   { value: ThemePreference.System, label: 'System', icon: 'device' },

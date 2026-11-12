@@ -1,6 +1,5 @@
 import { AppError, ErrorKind } from '@/domain/errors';
-
-import type { ResponseType } from './types';
+import type { ResponseType } from '@/infrastructure/http/types';
 
 const EMPTY_STATUSES = new Set([204, 205, 304]);
 

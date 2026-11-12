@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { wordmark } from '../../theme';
+import { wordmark } from '@/presentation/theme';
 
 const OUTLINE = 1.5;
 const OUTLINE_OFFSETS = [

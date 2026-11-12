@@ -3,8 +3,8 @@ import { StyleSheet, View } from 'react-native';
 import type { ReactElement } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { useTheme } from '../../theme';
-import { Text } from '../atoms';
+import { Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 /** Height of the iOS navigation bar, so the home lines up with the native headers. */
 const BAR_HEIGHT = 44;

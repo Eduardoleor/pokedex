@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../theme';
-import { Text } from '../atoms';
+import { Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 export interface InfoItemProps {
   label: string;

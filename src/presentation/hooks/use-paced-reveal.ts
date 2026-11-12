@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import { useReduceMotion } from './use-reduce-motion';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
 
 interface PacedRevealOptions {
   /** Pause between one item showing up and the next. */

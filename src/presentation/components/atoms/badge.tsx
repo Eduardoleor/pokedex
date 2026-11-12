@@ -1,7 +1,7 @@
 import { View, type ViewProps } from 'react-native';
 
-import { useTheme } from '../../theme';
-import { Text } from './text';
+import { Text } from '@/presentation/components/atoms/text';
+import { useTheme } from '@/presentation/theme';
 
 export interface BadgeProps extends ViewProps {
   label: string;

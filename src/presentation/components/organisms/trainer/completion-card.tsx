@@ -2,8 +2,8 @@ import { StyleSheet, View } from 'react-native';
 
 import Svg, { Circle } from 'react-native-svg';
 
-import { useTheme } from '../../../theme';
-import { Surface, Text } from '../../atoms';
+import { Surface, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 const SIZE = 112;
 const STROKE = 12;

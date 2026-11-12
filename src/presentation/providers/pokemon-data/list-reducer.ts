@@ -1,9 +1,8 @@
 import type { AppError } from '@/domain/errors';
 import type { PokemonSummary } from '@/domain/models';
 import type { Cached, Page } from '@/domain/types';
-
-import { RequestStatus } from '../../types';
-import { isOfflineError } from './is-offline-error';
+import { isOfflineError } from '@/presentation/providers/pokemon-data/is-offline-error';
+import { RequestStatus } from '@/presentation/types';
 
 export type ListLoadMode = 'initial' | 'refresh' | 'more' | 'revalidate';
 

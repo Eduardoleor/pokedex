@@ -5,10 +5,10 @@ export {
   formatRelativeTime,
   formatStatName,
   formatWeight,
-} from './format';
-export { type Generation, GENERATIONS, isInGeneration } from './generations';
-export { haptics } from './haptics';
-export { matchesPokemon, normalizeSearch } from './search';
+} from '@/presentation/utils/format';
+export { type Generation, GENERATIONS, isInGeneration } from '@/presentation/utils/generations';
+export { haptics } from '@/presentation/utils/haptics';
+export { matchesPokemon, normalizeSearch } from '@/presentation/utils/search';
 export {
   catchesByDay,
   catchesByGeneration,
@@ -19,5 +19,5 @@ export {
   trainerDays,
   type TrainerRank,
   trainerRank,
-} from './trainer-stats';
-export { type TypeMatchups, typeMatchups } from './type-effectiveness';
+} from '@/presentation/utils/trainer-stats';
+export { type TypeMatchups, typeMatchups } from '@/presentation/utils/type-effectiveness';

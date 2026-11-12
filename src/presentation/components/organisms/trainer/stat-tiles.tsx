@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme, wordmark } from '../../../theme';
-import { Icon, type IconName, Text } from '../../atoms';
+import { Icon, type IconName, Text } from '@/presentation/components/atoms';
+import { useTheme, wordmark } from '@/presentation/theme';
 
 interface Tile {
   icon: IconName;

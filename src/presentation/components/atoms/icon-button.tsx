@@ -1,7 +1,7 @@
 import { Pressable, type PressableProps, StyleSheet } from 'react-native';
 
-import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
-import { Icon, type IconName } from './icon';
+import { Icon, type IconName } from '@/presentation/components/atoms/icon';
+import { MIN_TOUCH_SIZE, useTheme } from '@/presentation/theme';
 
 export interface IconButtonProps extends Omit<PressableProps, 'children'> {
   icon: IconName;
