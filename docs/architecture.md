@@ -144,11 +144,25 @@ PokéAPI exposes `cries.latest` for every Pokémon. Most files are **Ogg Vorbis*
 
 Cries are downloaded only when the user taps the button, never by the background prefetch, to avoid spending data on audio nobody asked for. The audio session uses the `playback` category so a cry is heard with the silent switch on, and the library's config plugin is set without background audio or foreground-service permissions.
 
+## Onboarding
+
+Shown once, on first launch, and doubles as the first load:
+
+| Area            | Behavior                                                                                                                            |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| Top half        | Featured Pokémon over a blurred copy of its own artwork (`expo-image` `blurRadius`), so the backdrop follows whoever is featured    |
+| Thumbnail strip | Grows as each of the first 20 Pokémon is saved (detail + artwork). Autoplays; touching it pauses for 5 s; tapping one highlights it |
+| Bottom half     | Progress bar (`x/20 saved for offline use`), instructions carousel with the same autoplay/pause behavior, and a large start button  |
+
+- `OnboardingProvider` reads the `onboarding-completed` flag from the preferences store and keeps the native splash visible until it knows which screen comes first, so the list never flashes.
+- Progress comes from the background prefetch: `prefetchDetails` reports every saved id (detail and artwork via `Image.prefetch`) and `PokemonDetailsContext` exposes them as `savedIds`.
+- `useAutoplay` holds the shared cycle/pause logic; the start button is always enabled because saving continues in the background.
+
 ## Theme
 
 `ThemeProvider` resolves the active scheme from the user preference (`system`, `light`, `dark`; saved in the `preferences` store) and the OS setting. Components only read tokens from `useTheme()`:
 
-- `palettes.light` / `palettes.dark`: semantic colors (`background`, `surface`, `textPrimary`, `primary`…).
+- `palettes.light` / `palettes.dark`: semantic colors (`background`, `surface`, `textPrimary`, `primary`, `band`…) built from the Pokéball colors (`pokeball.red`, `pokeball.black`, `pokeball.white`). In light mode the primary red is darkened to `#CC0000` so white labels keep WCAG AA contrast.
 - `typeColors`: badge background and text color per Pokémon type, chosen for AA contrast.
 - `spacing`, `radius`, `typography`, `MIN_TOUCH_SIZE` (44 pt).
 

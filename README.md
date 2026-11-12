@@ -69,7 +69,8 @@ Full description, folder map and data flow: [docs/architecture.md](docs/architec
 
 - First 20 Pokémon on launch, more loaded while scrolling (infinite pagination) and pull to refresh.
 - Detail screen with artwork, types, height, weight, base experience, abilities and base stats.
-- Light and dark mode, following the system or chosen from the header toggle.
+- First-launch onboarding that saves the first 20 Pokémon for offline use while explaining the app.
+- Pokéball-inspired palette in light and dark mode, following the system or chosen from the header toggle.
 - Offline support: saved data opens instantly, a 5-day cache keeps it fresh in the background, and details are saved ahead of time.
 - Battle cry on the detail screen, downloaded on first play and available offline afterwards (iOS and Android).
 - Loading skeletons, empty and error states with retry, screen reader labels.
@@ -111,3 +112,4 @@ Dev tooling (ESLint, Prettier, Husky, commitlint, `@expo/fingerprint`) is listed
 - The APK `versionName` comes from `app.json`; it is not synced with the release tag yet.
 - Automated tests (unit tests for reducers, `cachedQuery` and mappers are the natural first step).
 - Cache size limit / cleanup of entries for Pokémon that are no longer listed.
+- App icon and splash still use the Expo template artwork; they need Pokédex-specific assets.
