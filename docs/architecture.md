@@ -148,15 +148,17 @@ Cries are downloaded only when the user taps the button, never by the background
 
 Shown once, on first launch, and doubles as the first load:
 
-| Area            | Behavior                                                                                                                            |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Top half        | Featured Pokémon over a blurred copy of its own artwork (`expo-image` `blurRadius`), so the backdrop follows whoever is featured    |
-| Thumbnail strip | Grows as each of the first 20 Pokémon is saved (detail + artwork). Autoplays; touching it pauses for 5 s; tapping one highlights it |
-| Bottom half     | Progress bar (`x/20 saved for offline use`), instructions carousel with the same autoplay/pause behavior, and a large start button  |
+| Area            | Behavior                                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Top half        | Featured Pokémon over a blurred copy of its own artwork (`expo-image` `blurRadius`), so the backdrop follows whoever is featured     |
+| Thumbnail strip | Grows as each of the first 20 Pokémon is saved (detail + artwork). Autoplays; touching it pauses for 5 s; tapping one highlights it  |
+| Bottom half     | Instructions carousel (same autoplay/pause), a Poké Ball to throw with a swipe (or tap) and a discreet `x of 20 Pokémon saved` count |
 
 - `OnboardingProvider` reads the `onboarding-completed` flag from the preferences store and keeps the native splash visible until it knows which screen comes first, so the list never flashes.
 - Progress comes from the background prefetch: `prefetchDetails` reports every saved id (detail and artwork via `Image.prefetch`) and `PokemonDetailsContext` exposes them as `savedIds`.
-- `useAutoplay` holds the shared cycle/pause logic; the start button is always enabled because saving continues in the background.
+- `useAutoplay` holds the shared cycle/pause logic. The ball can be thrown any time; saving continues in the background.
+- Catch sequence (`PokeballLauncher`, React Native `Animated` + responder events): the ball flies to the featured Pokémon, opens with a glow, pulls it in, wobbles three times while growing, bursts with sparks and grows to fill the screen; the home screen then splits a full-screen ball open (`PokeballReveal`). The Poké Ball is an SVG drawn with `react-native-svg`. "Reduce motion" skips the animation.
+- Development only: the Poké Ball button in the list header replays the onboarding (tap: simulated loading, long press: offline) without touching saved data.
 
 ## Theme
 
