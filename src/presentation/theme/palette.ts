@@ -33,6 +33,19 @@ export interface ColorPalette {
   danger: string;
   warning: string;
   skeleton: string;
+  /** Navigation bar and the band under it: the Poké Ball's red top. */
+  header: string;
+  onHeader: string;
+  /** Warm backdrop behind each artwork. */
+  artwork: string;
+  /** Pokédex number pill, in the wordmark colors. */
+  dexPill: string;
+  onDexPill: string;
+  /** Pokémon names on cards. */
+  cardTitle: string;
+  /** Favorites, counters and highlights: the wordmark yellow. */
+  accent: string;
+  onAccent: string;
 }
 
 export const palettes: Record<ColorScheme, ColorPalette> = {
@@ -52,6 +65,14 @@ export const palettes: Record<ColorScheme, ColorPalette> = {
     danger: '#B42318',
     warning: '#8A5A00',
     skeleton: '#E6E6EA',
+    header: pokeball.red,
+    onHeader: pokeball.white,
+    artwork: '#FFF4D6',
+    dexPill: wordmark.blue,
+    onDexPill: pokeball.white,
+    cardTitle: wordmark.deepBlue,
+    accent: wordmark.yellow,
+    onAccent: wordmark.deepBlue,
   },
   dark: {
     background: '#121214',
@@ -68,6 +89,14 @@ export const palettes: Record<ColorScheme, ColorPalette> = {
     danger: '#FF8A80',
     warning: '#F2C14E',
     skeleton: '#2A2A2E',
+    header: '#B71C0C',
+    onHeader: pokeball.white,
+    artwork: '#1E2A44',
+    dexPill: wordmark.yellow,
+    onDexPill: wordmark.deepBlue,
+    cardTitle: '#F5F5F7',
+    accent: wordmark.yellow,
+    onAccent: wordmark.deepBlue,
   },
 };
 

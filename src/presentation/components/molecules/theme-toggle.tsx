@@ -15,11 +15,12 @@ const ICONS: Record<ThemePreference, IconName> = {
 };
 
 export function ThemeToggle() {
-  const { preference, setPreference } = useTheme();
+  const { theme, preference, setPreference } = useTheme();
 
   return (
     <IconButton
       icon={ICONS[preference]}
+      color={theme.colors.onHeader}
       accessibilityLabel={`Theme: ${preference}. Double tap to switch to ${NEXT[preference]}.`}
       onPress={() => setPreference(NEXT[preference])}
     />

@@ -31,7 +31,8 @@ export function NavigationTheme({ children }: { children: ReactNode }) {
 
   return (
     <NavigationThemeProvider value={navigationTheme}>
-      <StatusBar style={theme.scheme === 'dark' ? 'light' : 'dark'} />
+      {/* The red header needs light status bar content in both schemes. */}
+      <StatusBar style="light" />
       {children}
     </NavigationThemeProvider>
   );
