@@ -1,4 +1,4 @@
-import { ErrorKind } from './error-kind';
+import { ErrorKind } from '@/domain/errors/error-kind';
 
 interface AppErrorOptions {
   status?: number;

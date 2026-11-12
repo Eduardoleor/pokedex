@@ -1,6 +1,6 @@
 import { View } from 'react-native';
 
-import { useTheme } from '../../theme';
+import { useTheme } from '@/presentation/theme';
 
 export interface PageDotsProps {
   count: number;

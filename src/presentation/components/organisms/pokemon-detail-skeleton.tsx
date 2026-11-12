@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../theme';
-import { Skeleton, Surface } from '../atoms';
+import { Skeleton, Surface } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 export function PokemonDetailSkeleton() {
   const { theme } = useTheme();

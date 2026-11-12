@@ -2,7 +2,7 @@ import { Animated, StyleSheet, View } from 'react-native';
 
 import Svg, { Circle, Ellipse, Path, Rect } from 'react-native-svg';
 
-import { pokeball } from '../../theme';
+import { pokeball } from '@/presentation/theme';
 
 export interface PokeballProps {
   size: number;

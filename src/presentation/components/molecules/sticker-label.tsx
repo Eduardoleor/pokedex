@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { wordmark } from '../../theme';
+import { wordmark } from '@/presentation/theme';
 
 const OUTLINE = 1.5;
 const OUTLINE_OFFSETS = [
@@ -18,9 +18,21 @@ const OUTLINE_OFFSETS = [
  * Tilted text in the Pokémon wordmark colors. React Native has no text stroke, so the
  * outline is drawn with offset copies behind the fill.
  */
-export function StickerLabel({ text }: { text: string }) {
+export function StickerLabel({
+  text,
+  size = 'regular',
+}: {
+  text: string;
+  size?: 'regular' | 'large';
+}) {
+  // Keeps the tilt from the base style; a transform in the override would replace it.
+  const scale = size === 'large' ? { transform: [{ rotate: '-6deg' }, { scale: 1.7 }] } : null;
   return (
-    <View style={styles.sticker} accessible={false} importantForAccessibility="no-hide-descendants">
+    <View
+      style={[styles.sticker, scale]}
+      accessible={false}
+      importantForAccessibility="no-hide-descendants"
+    >
       <Text
         style={[styles.text, styles.layer, styles.depth]}
         numberOfLines={1}

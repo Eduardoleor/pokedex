@@ -1,7 +1,11 @@
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { pokeball } from '../../theme';
-import { BAND_RATIO, BUTTON_INNER_RATIO, BUTTON_RATIO } from '../atoms/pokeball-geometry';
+import {
+  BAND_RATIO,
+  BUTTON_INNER_RATIO,
+  BUTTON_RATIO,
+} from '@/presentation/components/atoms/pokeball-geometry';
+import { pokeball } from '@/presentation/theme';
 
 export interface GrowingBallProps {
   /** Animated diameter in px. */

@@ -1,16 +1,15 @@
 import { AppError, ErrorKind, isAppError, toAppError } from '@/domain/errors';
-
-import { buildUrl } from './build-url';
-import { HttpMethod, isIdempotent } from './http-method';
-import { parseResponse } from './parse-response';
-import { errorFromStatus } from './status-error';
+import { buildUrl } from '@/infrastructure/http/build-url';
+import { HttpMethod, isIdempotent } from '@/infrastructure/http/http-method';
+import { parseResponse } from '@/infrastructure/http/parse-response';
+import { errorFromStatus } from '@/infrastructure/http/status-error';
 import type {
   HttpClient,
   HttpClientConfig,
   HttpRequest,
   HttpResponse,
   RequestOptions,
-} from './types';
+} from '@/infrastructure/http/types';
 
 const DEFAULT_TIMEOUT_MS = 15_000;
 const DEFAULT_RETRIES = 2;

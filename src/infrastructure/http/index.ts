@@ -1,6 +1,6 @@
-export { buildQueryString, buildUrl } from './build-url';
-export { FetchHttpClient } from './fetch-http-client';
-export { HttpMethod } from './http-method';
+export { buildQueryString, buildUrl } from '@/infrastructure/http/build-url';
+export { FetchHttpClient } from '@/infrastructure/http/fetch-http-client';
+export { HttpMethod } from '@/infrastructure/http/http-method';
 export type {
   HttpClient,
   HttpClientConfig,
@@ -9,4 +9,4 @@ export type {
   QueryParams,
   RequestOptions,
   ResponseType,
-} from './types';
+} from '@/infrastructure/http/types';

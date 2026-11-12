@@ -8,7 +8,7 @@ import {
 } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
-import { useTheme } from '../theme';
+import { useTheme } from '@/presentation/theme';
 
 /** Keeps headers, backgrounds and the status bar in sync with the app theme. */
 export function NavigationTheme({ children }: { children: ReactNode }) {

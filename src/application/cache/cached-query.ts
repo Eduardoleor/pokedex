@@ -1,9 +1,8 @@
+import { type CachePolicy, isFresh } from '@/application/cache/cache-policy';
 import { DataSource } from '@/domain/enums';
 import { ErrorKind, toAppError } from '@/domain/errors';
 import type { CacheStore } from '@/domain/ports';
 import type { Cached } from '@/domain/types';
-
-import { type CachePolicy, isFresh } from './cache-policy';
 
 export interface QueryOptions {
   signal?: AbortSignal;

@@ -10,12 +10,11 @@ import {
 
 import type { AppError } from '@/domain/errors';
 import type { PokemonSummary } from '@/domain/models';
-
-import { getErrorMessage } from '../../errors';
-import { useTheme } from '../../theme';
-import { Button, Spinner, Text } from '../atoms';
-import { PokemonCard } from './pokemon-card';
-import { useGridColumns } from './use-grid-columns';
+import { Button, Spinner, Text } from '@/presentation/components/atoms';
+import { PokemonCard } from '@/presentation/components/organisms/pokemon-card';
+import { useGridColumns } from '@/presentation/components/organisms/use-grid-columns';
+import { getErrorMessage } from '@/presentation/errors';
+import { useTheme } from '@/presentation/theme';
 
 export interface PokemonGridProps {
   items: PokemonSummary[];

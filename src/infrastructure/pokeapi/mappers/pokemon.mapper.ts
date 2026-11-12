@@ -2,9 +2,12 @@ import { isPokemonType, isStatName } from '@/domain/enums';
 import { AppError, ErrorKind } from '@/domain/errors';
 import type { PokemonDetail, PokemonStat, PokemonSummary } from '@/domain/models';
 import type { Page, PageRequest } from '@/domain/types';
-
-import { artworkUrl } from '../config';
-import type { NamedApiResourceDto, PaginatedResponseDto, PokemonDto } from '../dtos';
+import { artworkUrl } from '@/infrastructure/pokeapi/config';
+import type {
+  NamedApiResourceDto,
+  PaginatedResponseDto,
+  PokemonDto,
+} from '@/infrastructure/pokeapi/dtos';
 
 /** PokéAPI reports height in decimeters and weight in hectograms. */
 const DECI_TO_UNIT = 10;

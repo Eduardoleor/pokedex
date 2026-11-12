@@ -2,7 +2,7 @@ import { Text as NativeText, type TextProps as NativeTextProps } from 'react-nat
 
 import type { ReactNode } from 'react';
 
-import { type ColorPalette, type TypographyVariant, useTheme } from '../../theme';
+import { type ColorPalette, type TypographyVariant, useTheme } from '@/presentation/theme';
 
 type TextTone = keyof Pick<
   ColorPalette,

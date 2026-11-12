@@ -1,1 +1,1 @@
-export { getErrorMessage } from './get-error-message';
+export { getErrorMessage } from '@/presentation/errors/get-error-message';

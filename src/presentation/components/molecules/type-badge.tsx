@@ -1,8 +1,7 @@
 import type { PokemonType } from '@/domain/enums';
-
-import { typeColors } from '../../theme';
-import { formatName } from '../../utils';
-import { Badge } from '../atoms';
+import { Badge } from '@/presentation/components/atoms';
+import { typeColors } from '@/presentation/theme';
+import { formatName } from '@/presentation/utils';
 
 export function TypeBadge({ type }: { type: PokemonType }) {
   const colors = typeColors[type];

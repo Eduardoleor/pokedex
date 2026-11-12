@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { FlatList, type NativeScrollEvent, type NativeSyntheticEvent, View } from 'react-native';
 
-import type { OnboardingStep } from '../../content/onboarding-steps';
-import { useTheme } from '../../theme';
-import { PageDots } from '../atoms';
-import { InstructionCard } from '../molecules';
+import { PageDots } from '@/presentation/components/atoms';
+import { InstructionCard } from '@/presentation/components/molecules';
+import type { OnboardingStep } from '@/presentation/content/onboarding-steps';
+import { useTheme } from '@/presentation/theme';
 
 export interface InstructionsCarouselProps {
   steps: OnboardingStep[];

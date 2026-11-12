@@ -1,4 +1,4 @@
-import type { QueryParams, QueryValue } from './types';
+import type { QueryParams, QueryValue } from '@/infrastructure/http/types';
 
 function encodePair(key: string, value: QueryValue): string | null {
   if (value === null || value === undefined) {

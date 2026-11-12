@@ -3,11 +3,10 @@ import { Animated, StyleSheet, View } from 'react-native';
 import type { Ref } from 'react';
 
 import type { PokemonSummary } from '@/domain/models';
-
-import { useTheme } from '../../theme';
-import type { ViewHandle } from '../../types';
-import { formatDexNumber, formatName } from '../../utils';
-import { Icon, RemoteImage, Text } from '../atoms';
+import { Icon, RemoteImage, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
+import type { ViewHandle } from '@/presentation/types';
+import { formatDexNumber, formatName } from '@/presentation/utils';
 
 export interface OnboardingHeroProps {
   pokemon: PokemonSummary | undefined;
