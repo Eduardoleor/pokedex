@@ -61,7 +61,9 @@ iOS builds are **WIP**. Details, cost decisions and required settings are in [do
 
 ## Architecture
 
-_Pending._
+Clean Architecture with ports & adapters: `domain` (models, enums, ports) ← `application` (use cases) ← `presentation` (hooks, atomic components), with `infrastructure` (fetch client, PokéAPI adapter) implementing the domain ports and `di` wiring everything together. Layer boundaries are enforced by ESLint.
+
+Full description, folder map and data flow: [docs/architecture.md](docs/architecture.md).
 
 ## Technical decisions
 
