@@ -14,7 +14,7 @@ import { Pokeball } from '../atoms';
 import { ballFillDiameter } from '../atoms/pokeball-geometry';
 import { CatchBurst, GrowingBall, StickerLabel } from '../molecules';
 
-const BALL_SIZE = 92;
+const DEFAULT_BALL_SIZE = 92;
 /** Upward speed (px/ms) or distance (px) that counts as a throw. */
 const THROW_VELOCITY = 0.6;
 const THROW_DISTANCE = 110;
@@ -34,6 +34,13 @@ export interface PokeballLauncherProps {
   label: string;
   onThrow: () => void;
   onCaught: () => void;
+  /**
+   * `grow`: after the click the ball fills the screen (the onboarding hand-off).
+   * `stay`: the ball rests where it landed, for catches inside a screen.
+   */
+  finale?: 'grow' | 'stay';
+  /** Ball diameter at rest. */
+  size?: number;
 }
 
 interface Point {
@@ -71,6 +78,8 @@ export function PokeballLauncher({
   label,
   onThrow,
   onCaught,
+  finale = 'grow',
+  size: ballSize = DEFAULT_BALL_SIZE,
 }: PokeballLauncherProps) {
   const reduceMotion = useReduceMotion();
   const { width: windowWidth, height: windowHeight } = useWindowDimensions();
@@ -84,7 +93,7 @@ export function PokeballLauncher({
   const [scale] = useState(() => new Animated.Value(1));
   const [open] = useState(() => new Animated.Value(0));
   const [burst] = useState(() => new Animated.Value(0));
-  const [diameter] = useState(() => new Animated.Value(BALL_SIZE * CLICK_SCALE));
+  const [diameter] = useState(() => new Animated.Value(ballSize * CLICK_SCALE));
   const [growX] = useState(() => new Animated.Value(0));
   const [growY] = useState(() => new Animated.Value(0));
   const [growOpacity] = useState(() => new Animated.Value(0));
@@ -124,8 +133,7 @@ export function PokeballLauncher({
       measureCenter(restRef.current),
       measureCenter(targetRef.current),
     ]);
-    const target =
-      from && to ? { x: to.x - from.x, y: to.y - from.y } : { x: 0, y: -BALL_SIZE * 3 };
+    const target = from && to ? { x: to.x - from.x, y: to.y - from.y } : { x: 0, y: -ballSize * 3 };
 
     // Where the ball ends up, and how far that is from the screen's center.
     const landing = from
@@ -190,15 +198,19 @@ export function PokeballLauncher({
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
       }),
-      // Hand over to the view-built ball and grow it while sliding to the screen's center,
-      // where the home screen opens it (see PokeballReveal).
-      Animated.parallel([
-        Animated.timing(ballOpacity, { toValue: 0, duration: 60, useNativeDriver: false }),
-        Animated.timing(growOpacity, { toValue: 1, duration: 60, useNativeDriver: false }),
-        Animated.timing(diameter, { toValue: fillDiameter, ...growTiming }),
-        Animated.timing(growX, { toValue: toCenter.x, ...growTiming }),
-        Animated.timing(growY, { toValue: toCenter.y, ...growTiming }),
-      ]),
+      ...(finale === 'stay'
+        ? []
+        : [
+            // Hand over to the view-built ball and grow it while sliding to the screen's center,
+            // where the home screen opens it (see PokeballReveal).
+            Animated.parallel([
+              Animated.timing(ballOpacity, { toValue: 0, duration: 60, useNativeDriver: false }),
+              Animated.timing(growOpacity, { toValue: 1, duration: 60, useNativeDriver: false }),
+              Animated.timing(diameter, { toValue: fillDiameter, ...growTiming }),
+              Animated.timing(growX, { toValue: toCenter.x, ...growTiming }),
+              Animated.timing(growY, { toValue: toCenter.y, ...growTiming }),
+            ]),
+          ]),
     ]).start(({ finished }) => {
       if (finished) {
         onCaught();
@@ -209,6 +221,7 @@ export function PokeballLauncher({
     burst,
     capture,
     diameter,
+    finale,
     growOpacity,
     growX,
     growY,
@@ -225,6 +238,7 @@ export function PokeballLauncher({
     tilt,
     windowHeight,
     windowWidth,
+    ballSize,
   ]);
 
   const returnToRest = useCallback(() => {
@@ -290,7 +304,7 @@ export function PokeballLauncher({
         accessibilityActions={[{ name: 'activate' }]}
         // Screen readers have no swipe: activating the ball throws it.
         onAccessibilityAction={() => void throwBall()}
-        style={{ width: BALL_SIZE, height: BALL_SIZE }}
+        style={{ width: ballSize, height: ballSize }}
       >
         {/* Effects follow the ball's position but not its spin. */}
         <Animated.View
@@ -300,7 +314,7 @@ export function PokeballLauncher({
             { transform: [{ translateX: pan.x }, { translateY: Animated.add(pan.y, bob) }] },
           ]}
         >
-          <CatchBurst size={BALL_SIZE} glow={open} burst={burst} />
+          <CatchBurst size={ballSize} glow={open} burst={burst} />
           <Animated.View
             onStartShouldSetResponder={() => !isThrown}
             onMoveShouldSetResponder={() => !isThrown}
@@ -311,14 +325,20 @@ export function PokeballLauncher({
             style={[
               styles.ball,
               {
+                borderRadius: ballSize / 2,
                 opacity: ballOpacity,
                 transform: [{ rotate }, { rotate: wobbleRotate }, { scale }],
               },
             ]}
           >
             {/* Solid circle that carries the shadow; the SVG itself has no background. */}
-            <View style={styles.ballShadow} />
-            <Pokeball size={BALL_SIZE} open={open} />
+            <View
+              style={[
+                styles.ballShadow,
+                { width: ballSize - 8, height: ballSize - 8, borderRadius: ballSize / 2 },
+              ]}
+            />
+            <Pokeball size={ballSize} open={open} />
           </Animated.View>
           <GrowingBall
             diameter={diameter}
@@ -355,15 +375,11 @@ const styles = StyleSheet.create({
 
   ball: {
     zIndex: 10,
-    borderRadius: BALL_SIZE / 2,
   },
   ballShadow: {
     position: 'absolute',
     top: 4,
     left: 4,
-    width: BALL_SIZE - 8,
-    height: BALL_SIZE - 8,
-    borderRadius: BALL_SIZE / 2,
     backgroundColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },

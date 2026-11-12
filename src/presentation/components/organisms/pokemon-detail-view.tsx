@@ -1,10 +1,11 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, ScrollView, StyleSheet, View } from 'react-native';
 
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
 
 import type { PokemonDetail } from '@/domain/models';
 
-import { typeColors, useTheme } from '../../theme';
+import { useTheme } from '../../theme';
+import type { ViewHandle } from '../../types';
 import { formatDexNumber, formatHeight, formatName, formatWeight } from '../../utils';
 import { Badge, RemoteImage, Surface, Text } from '../atoms';
 import { InfoItem, StatBar, TypeBadge } from '../molecules';
@@ -13,14 +14,23 @@ export interface PokemonDetailViewProps {
   pokemon: PokemonDetail;
   /** Rendered under the types, e.g. the cry button. */
   actions?: ReactNode;
+  /** Rendered last in the hero, e.g. the Poké Ball to catch it. */
+  catchSlot?: ReactNode;
+  /** The artwork view, so a thrown Poké Ball knows where to fly. */
+  artworkRef?: RefObject<ViewHandle | null>;
+  /** 0 → 1 pulls the artwork into the ball. */
+  capture?: Animated.Value;
 }
 
-export function PokemonDetailView({ pokemon, actions }: PokemonDetailViewProps) {
+export function PokemonDetailView({
+  pokemon,
+  actions,
+  catchSlot,
+  artworkRef,
+  capture,
+}: PokemonDetailViewProps) {
   const { theme } = useTheme();
   const name = formatName(pokemon.name);
-  const accent = pokemon.types[0]
-    ? typeColors[pokemon.types[0]].background
-    : theme.colors.surfaceMuted;
   const total = pokemon.stats.reduce((sum, stat) => sum + stat.value, 0);
 
   return (
@@ -32,14 +42,52 @@ export function PokemonDetailView({ pokemon, actions }: PokemonDetailViewProps) 
         <View
           style={[
             styles.artwork,
-            { backgroundColor: `${accent}33`, borderRadius: theme.radius.lg },
+            styles.shadow,
+            {
+              borderRadius: theme.radius.lg,
+              backgroundColor: theme.colors.surface,
+              shadowOpacity: theme.scheme === 'dark' ? 0.4 : 0.12,
+            },
           ]}
         >
-          <RemoteImage
-            uri={pokemon.imageUrl}
-            accessibilityLabel={`${name} artwork`}
-            style={[styles.image, { backgroundColor: 'transparent' }]}
-          />
+          {/* Same blurred backdrop as the onboarding and the list cards. */}
+          <View style={[StyleSheet.absoluteFill, styles.clip, { borderRadius: theme.radius.lg }]}>
+            <RemoteImage
+              uri={pokemon.imageUrl}
+              accessibilityLabel=""
+              accessible={false}
+              blurRadius={36}
+              contentFit="cover"
+              style={styles.backdrop}
+            />
+            <View
+              style={[
+                StyleSheet.absoluteFill,
+                {
+                  backgroundColor: theme.colors.surface,
+                  opacity: theme.scheme === 'dark' ? 0.45 : 0.3,
+                },
+              ]}
+            />
+          </View>
+          <Animated.View
+            ref={artworkRef}
+            style={[
+              styles.image,
+              capture && {
+                opacity: capture.interpolate({ inputRange: [0, 0.8, 1], outputRange: [1, 1, 0] }),
+                transform: [
+                  { scale: capture.interpolate({ inputRange: [0, 1], outputRange: [1, 0.05] }) },
+                ],
+              },
+            ]}
+          >
+            <RemoteImage
+              uri={pokemon.imageUrl}
+              accessibilityLabel={`${name} artwork`}
+              style={[StyleSheet.absoluteFill, { backgroundColor: 'transparent' }]}
+            />
+          </Animated.View>
         </View>
         <Text variant="caption" tone="textMuted">
           {formatDexNumber(pokemon.id)}
@@ -53,6 +101,7 @@ export function PokemonDetailView({ pokemon, actions }: PokemonDetailViewProps) 
           ))}
         </View>
         {actions}
+        {catchSlot}
       </View>
 
       <Surface style={styles.row}>
@@ -108,6 +157,20 @@ const styles = StyleSheet.create({
   image: {
     width: '80%',
     height: '90%',
+  },
+  shadow: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 18,
+    elevation: 6,
+  },
+  clip: {
+    overflow: 'hidden',
+  },
+  backdrop: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: 'transparent',
+    transform: [{ scale: 1.5 }],
   },
   row: {
     flexDirection: 'row',

@@ -6,3 +6,4 @@ export {
   formatStatName,
   formatWeight,
 } from './format';
+export { matchesPokemon, normalizeSearch } from './search';

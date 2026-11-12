@@ -6,6 +6,6 @@ export { PageDots, type PageDotsProps } from './page-dots';
 export { Pokeball, type PokeballProps } from './pokeball';
 export { RemoteImage, type RemoteImageProps } from './remote-image';
 export { Skeleton, type SkeletonProps } from './skeleton';
-export { Spinner } from './spinner';
+export { Spinner, type SpinnerProps } from './spinner';
 export { Surface, type SurfaceProps } from './surface';
 export { Text, type TextProps } from './text';

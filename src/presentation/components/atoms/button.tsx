@@ -57,7 +57,7 @@ export function Button({
     >
       <View style={[styles.content, { gap: theme.spacing.sm }]}>
         {loading ? (
-          <Spinner color={variant === 'primary' ? theme.colors.onPrimary : theme.colors.primary} />
+          <Spinner size={18} />
         ) : icon ? (
           <Icon name={icon} size={size === 'large' ? 22 : 18} tone={tone} />
         ) : null}

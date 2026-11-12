@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, StyleSheet, View } from 'react-native';
 
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/presentation/components/atoms';
@@ -14,17 +14,17 @@ import {
 } from '@/presentation/components/organisms';
 import { ONBOARDING_STEPS } from '@/presentation/content/onboarding-steps';
 import { useAutoplay, useCryById, useOnboardingProgress } from '@/presentation/hooks';
+import { useCaught } from '@/presentation/providers/caught-provider';
 import { useOnboarding } from '@/presentation/providers/onboarding-provider';
 import { useTheme } from '@/presentation/theme';
-import { toOnboardingPreview, type ViewHandle } from '@/presentation/types';
+import type { ViewHandle } from '@/presentation/types';
 
 export default function OnboardingScreen() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { complete, requestReveal } = useOnboarding();
-  const params = useLocalSearchParams<{ preview?: string }>();
-  const preview = __DEV__ ? toOnboardingPreview(params.preview) : undefined;
-  const { ready, total, isComplete, isOffline } = useOnboardingProgress(preview);
+  const { catchPokemon } = useCaught();
+  const { ready, total, isComplete, isOffline } = useOnboardingProgress();
 
   const featured = useAutoplay(ready.length, { intervalMs: 2500 });
   const steps = useAutoplay(ONBOARDING_STEPS.length, { intervalMs: 4500 });
@@ -54,16 +54,16 @@ export default function OnboardingScreen() {
     }
   }, [goTo, isComplete, isPaused, ready.length]);
 
+  const caught = ready[featured.index];
   const start = useCallback(() => {
-    requestReveal();
-    // A preview never marks the onboarding as completed.
-    if (preview) {
-      router.back();
-      return;
+    // The first catch is saved; the home Poké Ball celebrates it.
+    if (caught) {
+      catchPokemon(caught);
     }
+    requestReveal();
     complete();
     router.replace('/');
-  }, [complete, preview, requestReveal]);
+  }, [catchPokemon, caught, complete, requestReveal]);
 
   const status = isOffline
     ? "Offline · we'll save them when you connect"
