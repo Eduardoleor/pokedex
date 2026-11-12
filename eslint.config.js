@@ -23,6 +23,40 @@ module.exports = defineConfig([
       'import/newline-after-import': 'error',
       'import/no-duplicates': 'error',
       'import/no-cycle': 'error',
+      'import/no-restricted-paths': [
+        'error',
+        {
+          zones: [
+            {
+              target: './src/domain',
+              from: [
+                './src/application',
+                './src/infrastructure',
+                './src/presentation',
+                './src/di',
+                './src/app',
+              ],
+              message: 'domain must not depend on outer layers.',
+            },
+            {
+              target: './src/application',
+              from: ['./src/infrastructure', './src/presentation', './src/di', './src/app'],
+              message: 'application may only depend on domain.',
+            },
+            {
+              target: './src/infrastructure',
+              from: ['./src/application', './src/presentation', './src/di', './src/app'],
+              message:
+                'infrastructure implements domain ports; it must not know about other layers.',
+            },
+            {
+              target: './src/presentation',
+              from: ['./src/infrastructure', './src/app'],
+              message: 'presentation reaches adapters only through use cases injected by di.',
+            },
+          ],
+        },
+      ],
 
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       'no-debugger': 'error',
