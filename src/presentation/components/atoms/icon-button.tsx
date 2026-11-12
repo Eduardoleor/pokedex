@@ -6,9 +6,10 @@ import { Icon, type IconName } from './icon';
 export interface IconButtonProps extends Omit<PressableProps, 'children'> {
   icon: IconName;
   accessibilityLabel: string;
+  color?: string;
 }
 
-export function IconButton({ icon, style, ...rest }: IconButtonProps) {
+export function IconButton({ icon, color, style, ...rest }: IconButtonProps) {
   const { theme } = useTheme();
 
   return (
@@ -22,7 +23,7 @@ export function IconButton({ icon, style, ...rest }: IconButtonProps) {
       ]}
       {...rest}
     >
-      <Icon name={icon} size={22} />
+      <Icon name={icon} size={22} color={color} />
     </Pressable>
   );
 }

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { AccessibilityInfo, Animated, type DimensionValue, type ViewStyle } from 'react-native';
+import { Animated, type DimensionValue, type ViewStyle } from 'react-native';
 
+import { useReduceMotion } from '../../hooks/use-reduce-motion';
 import { useTheme } from '../../theme';
 
 export interface SkeletonProps {
@@ -13,17 +14,7 @@ export interface SkeletonProps {
 export function Skeleton({ width = '100%', height = 16, radius, style }: SkeletonProps) {
   const { theme } = useTheme();
   const [opacity] = useState(() => new Animated.Value(1));
-  const [reduceMotion, setReduceMotion] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    AccessibilityInfo.isReduceMotionEnabled()
-      .then((enabled) => active && setReduceMotion(enabled))
-      .catch(() => undefined);
-    return () => {
-      active = false;
-    };
-  }, []);
+  const reduceMotion = useReduceMotion();
 
   useEffect(() => {
     if (reduceMotion) {

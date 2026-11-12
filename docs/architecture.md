@@ -144,11 +144,27 @@ PokéAPI exposes `cries.latest` for every Pokémon. Most files are **Ogg Vorbis*
 
 Cries are downloaded only when the user taps the button, never by the background prefetch, to avoid spending data on audio nobody asked for. The audio session uses the `playback` category so a cry is heard with the silent switch on, and the library's config plugin is set without background audio or foreground-service permissions.
 
+## Onboarding
+
+Shown once, on first launch, and doubles as the first load:
+
+| Area            | Behavior                                                                                                                             |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| Top half        | Featured Pokémon over a blurred copy of its own artwork (`expo-image` `blurRadius`), so the backdrop follows whoever is featured     |
+| Thumbnail strip | Grows as each of the first 20 Pokémon is saved (detail + artwork). Autoplays; touching it pauses for 5 s; tapping one highlights it  |
+| Bottom half     | Instructions carousel (same autoplay/pause), a Poké Ball to throw with a swipe (or tap) and a discreet `x of 20 Pokémon saved` count |
+
+- `OnboardingProvider` reads the `onboarding-completed` flag from the preferences store and keeps the native splash visible until it knows which screen comes first, so the list never flashes.
+- Progress comes from the background prefetch: `prefetchDetails` reports every saved id (detail and artwork via `Image.prefetch`) and `PokemonDetailsContext` exposes them as `savedIds`.
+- `useAutoplay` holds the shared cycle/pause logic. The ball can be thrown any time; saving continues in the background.
+- Catch sequence (`PokeballLauncher`, React Native `Animated` + responder events): the ball flies to the featured Pokémon, opens with a glow, pulls it in, wobbles three times while growing, bursts with sparks, then hands over to `GrowingBall`, a ball built from plain views that grows to fill the screen while sliding to its center; the home screen splits a full-screen ball open (`PokeballReveal`). The ball is not scaled as an image: growing it through layout redraws it at its real size on every frame, so it never pixelates. Both share their proportions from `pokeball-geometry.ts` so they line up. The Poké Ball is an SVG drawn with `react-native-svg`. "Reduce motion" skips the animation.
+- Development only: the Poké Ball button in the list header replays the onboarding (tap: simulated loading, long press: offline) without touching saved data.
+
 ## Theme
 
 `ThemeProvider` resolves the active scheme from the user preference (`system`, `light`, `dark`; saved in the `preferences` store) and the OS setting. Components only read tokens from `useTheme()`:
 
-- `palettes.light` / `palettes.dark`: semantic colors (`background`, `surface`, `textPrimary`, `primary`…).
+- `palettes.light` / `palettes.dark`: semantic colors (`background`, `surface`, `textPrimary`, `primary`, `band`…) built from the Pokéball colors (`pokeball.red`, `pokeball.black`, `pokeball.white`). In light mode the primary red is darkened to `#CC0000` so white labels keep WCAG AA contrast.
 - `typeColors`: badge background and text color per Pokémon type, chosen for AA contrast.
 - `spacing`, `radius`, `typography`, `MIN_TOUCH_SIZE` (44 pt).
 
