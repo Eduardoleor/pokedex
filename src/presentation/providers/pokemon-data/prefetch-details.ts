@@ -1,30 +1,40 @@
+import { Image } from 'expo-image';
+
 import type { GetPokemonDetail } from '@/application/use-cases';
 import { toAppError } from '@/domain/errors';
+import type { PokemonSummary } from '@/domain/models';
 
 import { isOfflineError } from './is-offline-error';
 
 const CONCURRENCY = 2;
 
 /**
- * Saves the detail of each id so it opens instantly and works offline later.
- * Runs quietly: skips fresh entries, stops at the first connectivity error.
+ * Saves the detail and artwork of each Pokémon so they open instantly and work offline.
+ * Runs quietly: fresh entries are only reported, and it stops at the first connectivity error.
  */
 export async function prefetchDetails(
-  ids: number[],
+  items: PokemonSummary[],
   getPokemonDetail: GetPokemonDetail,
   signal: AbortSignal,
+  onSaved: (id: number) => void,
 ): Promise<void> {
-  const queue = [...ids];
+  const queue = [...items];
   let offline = false;
 
   async function worker(): Promise<void> {
     while (queue.length > 0 && !signal.aborted && !offline) {
-      const id = queue.shift();
-      if (id === undefined || (await getPokemonDetail.isCached(id))) {
+      const item = queue.shift();
+      if (!item) {
         continue;
       }
       try {
-        await getPokemonDetail.execute(id, { signal, forceRefresh: true });
+        if (!(await getPokemonDetail.isCached(item.id))) {
+          await getPokemonDetail.execute(item.id, { signal, forceRefresh: true });
+        }
+        await Image.prefetch(item.imageUrl, 'disk');
+        if (!signal.aborted) {
+          onSaved(item.id);
+        }
       } catch (error) {
         offline = isOfflineError(toAppError(error));
       }

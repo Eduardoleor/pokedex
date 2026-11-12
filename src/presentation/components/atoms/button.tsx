@@ -12,6 +12,7 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
   variant?: ButtonVariant;
   loading?: boolean;
   icon?: IconName;
+  size?: 'regular' | 'large';
 }
 
 export function Button({
@@ -20,6 +21,7 @@ export function Button({
   loading = false,
   disabled,
   icon,
+  size = 'regular',
   style,
   ...rest
 }: ButtonProps) {
@@ -42,6 +44,7 @@ export function Button({
       hitSlop={8}
       style={(state) => [
         styles.base,
+        size === 'large' && styles.large,
         {
           backgroundColor: background,
           borderRadius: theme.radius.pill,
@@ -56,9 +59,9 @@ export function Button({
         {loading ? (
           <Spinner color={variant === 'primary' ? theme.colors.onPrimary : theme.colors.primary} />
         ) : icon ? (
-          <Icon name={icon} size={18} tone={tone} />
+          <Icon name={icon} size={size === 'large' ? 22 : 18} tone={tone} />
         ) : null}
-        <Text variant="label" tone={tone}>
+        <Text variant={size === 'large' ? 'heading' : 'label'} tone={tone}>
           {label}
         </Text>
       </View>
@@ -71,6 +74,10 @@ const styles = StyleSheet.create({
     minHeight: MIN_TOUCH_SIZE,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  large: {
+    minHeight: 60,
+    alignSelf: 'stretch',
   },
   content: {
     flexDirection: 'row',
