@@ -22,6 +22,7 @@
 - [Features](#features)
 - [Getting started](#getting-started)
 - [Scripts](#scripts)
+- [About this project: a working demonstration](#about-this-project-a-working-demonstration)
 - [Architecture](#architecture)
 - [Project structure](#project-structure)
 - [How data is consumed](#how-data-is-consumed)
@@ -30,10 +31,11 @@
 - [State management](#state-management)
 - [UI, motion and haptics](#ui-motion-and-haptics)
 - [Accessibility](#accessibility)
+- [Testing](#testing)
 - [Code quality and tooling](#code-quality-and-tooling)
 - [CI/CD](#cicd)
 - [Technical decisions](#technical-decisions)
-- [Libraries](#libraries)
+- [Libraries and the "no external libraries" rule](#libraries-and-the-no-external-libraries-rule)
 - [Roadmap](#roadmap)
 
 ## Demo
@@ -126,15 +128,27 @@ pnpm start          # start only the dev server (after a development build is in
 
 ## Scripts
 
-| Script              | Description                                  |
-| ------------------- | -------------------------------------------- |
-| `pnpm lint`         | Run ESLint on the whole project              |
-| `pnpm lint:fix`     | Run ESLint with autofix                      |
-| `pnpm format`       | Format with Prettier                         |
-| `pnpm format:check` | Check formatting without writing             |
-| `pnpm typecheck`    | Type-check with `tsc`                        |
-| `pnpm validate`     | `typecheck` + `lint` + `format:check`        |
-| `pnpm doctor`       | Diagnose dependency and config issues (Expo) |
+| Script              | Description                                    |
+| ------------------- | ---------------------------------------------- |
+| `pnpm lint`         | Run ESLint on the whole project                |
+| `pnpm lint:fix`     | Run ESLint with autofix                        |
+| `pnpm format`       | Format with Prettier                           |
+| `pnpm format:check` | Check formatting without writing               |
+| `pnpm typecheck`    | Type-check with `tsc`                          |
+| `pnpm test`         | Run the unit tests (Jest)                      |
+| `pnpm test:watch`   | Run the tests again on every change            |
+| `pnpm validate`     | `typecheck` + `lint` + `format:check` + `test` |
+| `pnpm doctor`       | Diagnose dependency and config issues (Expo)   |
+
+## About this project: a working demonstration
+
+The brief asks for a small app: a list of 20 Pokémon, a detail screen and local storage. Solving only that takes a few files. This repository deliberately does more, because **its purpose is to show how I work**, not to be the smallest possible answer:
+
+- **Layers, ports and use cases for a two-endpoint app.** A project this size could call `fetch` from a hook and keep the result in `useState`. I used Clean Architecture, SOLID and dependency injection to demonstrate how I separate business rules, data access and UI, and how that separation makes the critical pieces testable without React, a network or a disk (see [Testing](#testing)). Each layer is small, and ESLint enforces the boundaries so the structure cannot erode silently.
+- **Offline-first caching, pagination, skeletons, haptics, a trainer profile.** The brief lists persistence, pagination and UX polish as things to consider or as bonus. I built them to show product thinking and attention to detail, not because the app needs all of it.
+- **Documentation, CI and tooling.** Husky, commitlint, Conventional Commits, Git Flow and a documented CI pipeline reflect how I would run a real team repository.
+
+The trade-off is explicit: **this could be simplified a lot**. For a production app of this exact scope I would flatten the use cases into repository calls, drop the DI container for a module-level instance, replace the hand-written reducers and cache with a data-fetching library, and remove everything not tied to a requirement. Treat the structure here as a demonstration of the pattern and of the discipline around it, not as a claim that this is the minimum a Pokedex needs.
 
 ## Architecture
 
@@ -393,6 +407,26 @@ The helper is fire-and-forget and a no-op on the web, so a device without a hapt
 - Colors meet WCAG AA contrast in light and dark mode (the primary red is darkened in light mode for white labels).
 - "Reduce motion" skips the throw animation, the paced reveal, skeleton shimmer and layout animations.
 
+## Testing
+
+```bash
+pnpm test           # run once
+pnpm test:watch     # re-run on change
+```
+
+Jest with the `jest-expo` preset. The suite targets the pieces where a bug would hurt most and that the architecture makes easy to isolate (36 tests, no network, no device):
+
+| Suite             | What it proves                                                                                                                              |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cachedQuery`     | Fresh copy skips the network, stale copy is served and flagged, forced refresh, fallback to saved data on error, cancellations never hidden |
+| `listReducer`     | Loading only on the initial request, pagination without duplicates, revalidation keeps loaded pages, offline and error states               |
+| `GetPokemonPage`  | Input validation (`offset`, `limit`) and cache-then-network behavior through a fake repository                                              |
+| `FetchHttpClient` | URL and query building, 404 mapping, retries on 5xx, giving up after the limit, network and cancellation errors                             |
+| `pokemon.mapper`  | Id extraction, unit conversion, slot ordering, unknown types and stats dropped, artwork fallback                                            |
+| `typeMatchups`    | 2x / 4x weaknesses, resistances that cancel weaknesses, immunities                                                                          |
+
+Tests sit next to the code they cover (`*.test.ts`). The application layer uses a tiny `FakeCacheStore` so that, like the production code, it never imports from `infrastructure`. CI runs the suite on every pull request. UI components are not covered yet; see the [Roadmap](#roadmap).
+
 ## Code quality and tooling
 
 - **TypeScript** in strict mode, plus `noUncheckedIndexedAccess` and `noImplicitReturns`.
@@ -428,26 +462,40 @@ iOS builds are a work in progress. Details, cost decisions and required settings
 | `expo-haptics` behind a tiny helper         | One place to tune feedback and to guarantee it never throws                                                                     |
 | Artwork in a layer above the sheet          | z-order is decided among siblings, so the artwork is lifted out of the hero instead of fighting the sheet with negative margins |
 
-## Libraries
+## Libraries and the "no external libraries" rule
 
-| Package                                                                           | Use                                                             |
-| --------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `expo-router`                                                                     | File-based navigation and route error boundaries                |
-| `expo-file-system`                                                                | Persistent offline cache                                        |
-| `expo-image`                                                                      | Remote images with disk cache and blurred backdrops             |
-| `expo-haptics`                                                                    | Tactile feedback for throws, catches and selections             |
-| `expo-network`                                                                    | Device connectivity                                             |
-| `expo-symbols`                                                                    | Native SF Symbols on iOS, with SVG fallbacks                    |
-| `react-native-svg`                                                                | The app's own icon set and the Poké Ball                        |
-| `react-native-audio-api`                                                          | Decodes and plays Pokémon cries (Ogg Vorbis) on iOS and Android |
-| `react-native-reanimated`, `react-native-gesture-handler`, `react-native-screens` | Navigation and gesture foundations                              |
+The brief asks for a solution built only with what React Native and JavaScript provide, with TypeScript, and says it does not matter whether it uses Expo or the CLI. I read that as: **no third-party packages for the logic of the challenge**. That part is respected in full.
 
-Dev tooling (ESLint, Prettier, Husky, commitlint, `@expo/fingerprint`) is listed in [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/ci-cd.md](docs/ci-cd.md).
+- **Logic, data and state are hand-written.** The HTTP client (`FetchHttpClient`) is a wrapper over native `fetch`. Caching is plain JSON files. State is React Context and `useReducer`. Navigation aside, there is no Redux, Axios, React Query, AsyncStorage or UI kit.
+- **Expo is the platform, not a dependency of the solution.** `expo-router`, `expo-file-system`, `expo-image`, `expo-network`, `expo-constants`, `expo-splash-screen`, `expo-status-bar`, `expo-system-ui`, `expo-font`, `expo-linking`, `expo-web-browser` and `expo-device` come with the Expo SDK that the brief allows. React Native ships no file-system or navigation API, so these fill gaps in the platform rather than add features.
+
+Three kinds of packages go beyond that, and each is optional polish that can be removed without touching the core:
+
+| Package                                                                                                                                                          | Why it is here                                                                                                                              | If removed                                             |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
+| `react-native-audio-api` (the only non-Expo, non-React-Native package that ships in the app)                                                                     | PokéAPI serves cries as Ogg Vorbis, which iOS cannot decode with its native players. React Native has no audio API at all                   | The cry button disappears; nothing else changes        |
+| `react-native-svg`, `react-native-reanimated`, `react-native-gesture-handler`, `react-native-screens`, `react-native-safe-area-context`, `react-native-worklets` | Part of the Expo SDK and required by Expo Router; `react-native-svg` also draws the app's own icon set and the Poké Ball                    | Navigation and icons stop working                      |
+| `expo-haptics`, `expo-symbols`, `expo-glass-effect`, `@expo/ui`                                                                                                  | Visual and tactile polish (haptics on every throw and catch, native SF Symbols, glass effect). Not required by any requirement of the brief | The app falls back to its own SVG icons and no haptics |
+
+Dev tooling (`jest`, `jest-expo`, ESLint, Prettier, Husky, lint-staged, commitlint, `@expo/fingerprint`, TypeScript) is not part of the shipped app. The brief lists linting, formatting and testing as positives, and the `jest-expo` preset is the standard way to run Jest in an Expo project.
+
+If the rule has to be read at its strictest, the changes are small and local: remove `react-native-audio-api` and the cry feature, delete `src/presentation/utils/haptics.ts` and its calls, and use the SVG icon set everywhere. The architecture does not depend on any of them, which is exactly what the ports (`SoundPlayer`, `MediaCache`, `CacheStore`) are for.
+
+| Package                  | Use                                                             |
+| ------------------------ | --------------------------------------------------------------- |
+| `expo-router`            | File-based navigation and route error boundaries                |
+| `expo-file-system`       | Persistent offline cache                                        |
+| `expo-image`             | Remote images with disk cache and blurred backdrops             |
+| `expo-network`           | Device connectivity                                             |
+| `react-native-svg`       | The app's own icon set and the Poké Ball                        |
+| `react-native-audio-api` | Decodes and plays Pokémon cries (Ogg Vorbis) on iOS and Android |
+| `expo-haptics`           | Tactile feedback for throws, catches and selections             |
+| `expo-symbols`           | Native SF Symbols on iOS, with SVG fallbacks                    |
 
 ## Roadmap
 
 - iOS build in CI (WIP).
 - The APK `versionName` comes from `app.json`; it is not synced with the release tag yet.
-- Automated tests: unit tests for reducers, `cachedQuery`, mappers and `typeMatchups` are the natural first step.
+- Component and integration tests (the unit suite covers the core logic only).
 - Cache size limit and cleanup of entries for Pokémon that are no longer listed.
 - Evolution chains and moves on the detail screen.
