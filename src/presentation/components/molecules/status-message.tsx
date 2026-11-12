@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../theme';
-import { Button, Icon, type IconName, Text } from '../atoms';
+import { Button, Icon, type IconName, Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
 
 export interface StatusMessageProps {
   icon: IconName;

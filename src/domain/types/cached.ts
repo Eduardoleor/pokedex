@@ -1,5 +1,5 @@
-import type { DataSource } from '../enums';
-import type { AppError } from '../errors';
+import type { DataSource } from '@/domain/enums';
+import type { AppError } from '@/domain/errors';
 
 export interface Cached<T> {
   data: T;

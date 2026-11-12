@@ -11,14 +11,15 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 
 import { useDependencies } from '@/di';
-
-import { OnboardingStatus } from '../types';
+import { OnboardingStatus } from '@/presentation/types';
 
 const COMPLETED_KEY = 'onboarding-completed';
 
 interface OnboardingContextValue {
   status: OnboardingStatus;
   complete: () => void;
+  /** Forgets the onboarding so it shows again on the next visit to home. */
+  reset: () => void;
   /** Set right after the catch so the home screen plays the Poké Ball opening. */
   isRevealPending: boolean;
   requestReveal: () => void;
@@ -58,13 +59,18 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     preferences.set(COMPLETED_KEY, true).catch(() => undefined);
   }, [preferences]);
 
+  const reset = useCallback(() => {
+    setStatus(OnboardingStatus.Pending);
+    preferences.remove(COMPLETED_KEY).catch(() => undefined);
+  }, [preferences]);
+
   const [isRevealPending, setIsRevealPending] = useState(false);
   const requestReveal = useCallback(() => setIsRevealPending(true), []);
   const finishReveal = useCallback(() => setIsRevealPending(false), []);
 
   const value = useMemo(
-    () => ({ status, complete, isRevealPending, requestReveal, finishReveal }),
-    [status, complete, isRevealPending, requestReveal, finishReveal],
+    () => ({ status, complete, reset, isRevealPending, requestReveal, finishReveal }),
+    [status, complete, reset, isRevealPending, requestReveal, finishReveal],
   );
 
   return <OnboardingContext value={value}>{children}</OnboardingContext>;

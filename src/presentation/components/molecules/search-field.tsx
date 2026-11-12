@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 
-import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
-import { Icon } from '../atoms';
+import { Icon } from '@/presentation/components/atoms';
+import { MIN_TOUCH_SIZE, useTheme } from '@/presentation/theme';
 
 export interface SearchFieldProps {
   value: string;

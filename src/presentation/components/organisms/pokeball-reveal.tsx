@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Animated, Easing, StyleSheet, useWindowDimensions, View } from 'react-native';
 
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { pokeball } from '../../theme';
 import {
   ballFillDiameter,
   BAND_RATIO,
   BUTTON_INNER_RATIO,
   BUTTON_RATIO,
-} from '../atoms/pokeball-geometry';
+} from '@/presentation/components/atoms/pokeball-geometry';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import { pokeball } from '@/presentation/theme';
 
 /**
  * Full-screen Poké Ball that splits open over the screen underneath: the continuation of

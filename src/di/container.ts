@@ -1,6 +1,12 @@
 import { Platform } from 'react-native';
 
-import { GetPokemonDetail, GetPokemonPage, PlayPokemonCry } from '@/application/use-cases';
+import {
+  ClearSyncedData,
+  GetPokemonDetail,
+  GetPokemonIdsByType,
+  GetPokemonPage,
+  PlayPokemonCry,
+} from '@/application/use-cases';
 import type { CacheStore } from '@/domain/ports';
 import { AudioApiSoundPlayer } from '@/infrastructure/audio';
 import { FetchHttpClient } from '@/infrastructure/http';
@@ -15,7 +21,9 @@ import {
 export interface Dependencies {
   getPokemonPage: GetPokemonPage;
   getPokemonDetail: GetPokemonDetail;
+  getPokemonIdsByType: GetPokemonIdsByType;
   playPokemonCry: PlayPokemonCry;
+  clearSyncedData: ClearSyncedData;
   preferences: CacheStore;
 }
 
@@ -31,7 +39,9 @@ export function createDependencies(): Dependencies {
   return {
     getPokemonPage: new GetPokemonPage(pokemonRepository, pokemonCache),
     getPokemonDetail: new GetPokemonDetail(pokemonRepository, pokemonCache),
+    getPokemonIdsByType: new GetPokemonIdsByType(pokemonRepository, pokemonCache),
     playPokemonCry: new PlayPokemonCry(mediaCache, new AudioApiSoundPlayer()),
+    clearSyncedData: new ClearSyncedData(pokemonCache, mediaCache),
     preferences,
   };
 }

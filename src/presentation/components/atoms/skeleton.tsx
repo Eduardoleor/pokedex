@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Animated, type DimensionValue, type ViewStyle } from 'react-native';
 
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { useTheme } from '../../theme';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import { useTheme } from '@/presentation/theme';
 
 export interface SkeletonProps {
   width?: DimensionValue;

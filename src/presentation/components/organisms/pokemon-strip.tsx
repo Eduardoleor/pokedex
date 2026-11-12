@@ -2,9 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { FlatList, type ListRenderItem } from 'react-native';
 
 import type { PokemonSummary } from '@/domain/models';
-
-import { useTheme } from '../../theme';
-import { PokemonThumb, THUMB_SIZE } from '../molecules';
+import { PokemonThumb, THUMB_SIZE } from '@/presentation/components/molecules';
+import { useTheme } from '@/presentation/theme';
 
 export interface PokemonStripProps {
   items: PokemonSummary[];

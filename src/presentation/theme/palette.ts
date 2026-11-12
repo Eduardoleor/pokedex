@@ -1,6 +1,5 @@
 import { PokemonType } from '@/domain/enums';
-
-import type { ColorScheme } from '../types';
+import type { ColorScheme } from '@/presentation/types';
 
 /** Pokéball colors: the red top, the black band and the white bottom. */
 export const pokeball = {
@@ -38,7 +37,7 @@ export interface ColorPalette {
   onHeader: string;
   /** Warm backdrop behind each artwork. */
   artwork: string;
-  /** Pokédex number pill, in the wordmark colors. */
+  /** Pokedex number pill, in the wordmark colors. */
   dexPill: string;
   onDexPill: string;
   /** Pokémon names on cards. */

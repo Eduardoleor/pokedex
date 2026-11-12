@@ -2,11 +2,10 @@ import { memo, useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
 import type { PokemonSummary } from '@/domain/models';
-
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { useTheme } from '../../theme';
-import { formatName } from '../../utils';
-import { RemoteImage } from '../atoms';
+import { RemoteImage } from '@/presentation/components/atoms';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import { useTheme } from '@/presentation/theme';
+import { formatName } from '@/presentation/utils';
 
 export const THUMB_SIZE = 64;
 

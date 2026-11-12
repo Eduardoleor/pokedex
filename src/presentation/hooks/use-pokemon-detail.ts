@@ -1,8 +1,8 @@
 import { useCallback, useEffect } from 'react';
 
-import { usePokemonDetailsContext } from '../providers/pokemon-data';
-import { emptyDetailEntry } from '../providers/pokemon-data/details-reducer';
-import { RequestStatus } from '../types';
+import { usePokemonDetailsContext } from '@/presentation/providers/pokemon-data';
+import { emptyDetailEntry } from '@/presentation/providers/pokemon-data/details-reducer';
+import { RequestStatus } from '@/presentation/types';
 
 export function usePokemonDetail(id: number) {
   const { details, loadDetail } = usePokemonDetailsContext();

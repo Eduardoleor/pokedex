@@ -24,7 +24,7 @@ export default function CaughtScreen() {
           icon="pokeball"
           title="Nothing caught yet"
           message="Open any Pokémon and throw a Poké Ball to catch it."
-          actionLabel="Browse the Pokédex"
+          actionLabel="Browse the Pokedex"
           onAction={() => router.back()}
         />
       }

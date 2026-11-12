@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
-import { useReduceMotion } from '../../hooks/use-reduce-motion';
-import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
-import { Icon, Pokeball, Text } from '../atoms';
+import { Icon, Pokeball, Text } from '@/presentation/components/atoms';
+import { useReduceMotion } from '@/presentation/hooks/use-reduce-motion';
+import { MIN_TOUCH_SIZE, useTheme } from '@/presentation/theme';
 
 export interface PokeballHeaderButtonProps {
   count: number;

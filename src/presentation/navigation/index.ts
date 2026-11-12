@@ -1,1 +1,1 @@
-export { NavigationTheme } from './navigation-theme';
+export { NavigationTheme } from '@/presentation/navigation/navigation-theme';

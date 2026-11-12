@@ -1,8 +1,8 @@
 import { StyleSheet, View } from 'react-native';
 
-import { useTheme } from '../../theme';
-import { formatRelativeTime } from '../../utils';
-import { Text } from '../atoms';
+import { Text } from '@/presentation/components/atoms';
+import { useTheme } from '@/presentation/theme';
+import { formatRelativeTime } from '@/presentation/utils';
 
 export interface ConnectionBannerProps {
   visible: boolean;

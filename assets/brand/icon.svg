@@ -1,0 +1,7 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024' width='1024' height='1024'><rect width='1024' height='1024' fill='#E3350D'/><g transform='translate(512 512) scale(1.1)'>
+<circle r='300' fill='#1C1C1E'/>
+<path d='M-256 0A256 256 0 0 1 256 0Z' fill='#E3350D'/>
+<path d='M-256 0A256 256 0 0 0 256 0Z' fill='#FFFFFF'/>
+<rect x='-298' y='-28' width='596' height='56' fill='#1C1C1E'/>
+<circle r='96' fill='#1C1C1E'/><circle r='56' fill='#FFFFFF'/>
+</g></svg>

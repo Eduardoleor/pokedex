@@ -1,4 +1,4 @@
-import type { PokemonType, StatName } from '../enums';
+import type { PokemonType, StatName } from '@/domain/enums';
 
 export interface PokemonSummary {
   id: number;

@@ -1,12 +1,12 @@
-import { Platform } from 'react-native';
-
-import { router, Stack } from 'expo-router';
+import { type ErrorBoundaryProps, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 
 import { DependenciesProvider } from '@/di';
-import { IconButton } from '@/presentation/components/atoms';
+import { OfflineSnackbar } from '@/presentation/components/molecules';
+import { CrashScreen } from '@/presentation/components/organisms';
 import { NavigationTheme } from '@/presentation/navigation';
 import { CaughtProvider } from '@/presentation/providers/caught-provider';
+import { NetworkProvider, useNetwork } from '@/presentation/providers/network-provider';
 import { OnboardingProvider } from '@/presentation/providers/onboarding-provider';
 import { PokemonDataProvider } from '@/presentation/providers/pokemon-data';
 import { ThemeProvider, useTheme } from '@/presentation/theme';
@@ -18,18 +18,31 @@ export default function RootLayout() {
   return (
     <DependenciesProvider>
       <ThemeProvider>
-        <OnboardingProvider>
-          <CaughtProvider>
-            <PokemonDataProvider>
-              <NavigationTheme>
-                <AppStack />
-              </NavigationTheme>
-            </PokemonDataProvider>
-          </CaughtProvider>
-        </OnboardingProvider>
+        <NetworkProvider>
+          <OnboardingProvider>
+            <CaughtProvider>
+              <PokemonDataProvider>
+                <NavigationTheme>
+                  <AppStack />
+                  <ConnectionSnackbar />
+                </NavigationTheme>
+              </PokemonDataProvider>
+            </CaughtProvider>
+          </OnboardingProvider>
+        </NetworkProvider>
       </ThemeProvider>
     </DependenciesProvider>
   );
+}
+
+/** Replaces any screen that throws while rendering, instead of a blank crash. */
+export function ErrorBoundary({ error, retry }: ErrorBoundaryProps) {
+  return <CrashScreen error={error} onRetry={() => void retry()} />;
+}
+
+function ConnectionSnackbar() {
+  const { isOffline } = useNetwork();
+  return <OfflineSnackbar isOffline={isOffline} />;
 }
 
 /** Every header wears the Poké Ball red, with heavy white titles like the onboarding. */
@@ -45,27 +58,9 @@ function AppStack() {
         headerTitleStyle: { fontWeight: '900' },
         headerBackButtonDisplayMode: 'minimal',
         statusBarStyle: 'light',
-        // iOS 26 wraps the system back button in a glass bubble that turns pink over the
-        // red header; a plain chevron without that background matches the home buttons.
-        ...(Platform.OS === 'ios' && {
-          unstable_headerLeftItems: ({ canGoBack }) =>
-            canGoBack
-              ? [
-                  {
-                    type: 'custom',
-                    hidesSharedBackground: true,
-                    element: (
-                      <IconButton
-                        icon="chevron-left"
-                        color={theme.colors.onHeader}
-                        accessibilityLabel="Back"
-                        onPress={() => router.back()}
-                      />
-                    ),
-                  },
-                ]
-              : [],
-        }),
+        // iOS 26 fades content under the bar; over the red band it reads as a grey shadow
+        // and a seam between the header and the search, so the header stays flat instead.
+        scrollEdgeEffects: { top: 'hidden', bottom: 'hidden', left: 'hidden', right: 'hidden' },
       }}
     >
       <Stack.Screen
@@ -73,6 +68,16 @@ function AppStack() {
         options={{ headerShown: false, gestureEnabled: false, animation: 'fade' }}
       />
       <Stack.Screen name="caught" options={{ title: 'Caught' }} />
+      <Stack.Screen name="profile" options={{ title: 'Trainer' }} />
+      <Stack.Screen
+        name="pokemon/[id]"
+        // Transparent from the very first frame, so entering never flashes a solid bar.
+        options={{
+          headerTransparent: true,
+          headerStyle: { backgroundColor: 'transparent' },
+          headerTitle: '',
+        }}
+      />
     </Stack>
   );
 }

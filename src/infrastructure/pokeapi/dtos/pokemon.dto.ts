@@ -1,4 +1,4 @@
-import type { NamedApiResourceDto } from './common.dto';
+import type { NamedApiResourceDto } from '@/infrastructure/pokeapi/dtos/common.dto';
 
 export interface PokemonTypeSlotDto {
   slot: number;

@@ -10,9 +10,8 @@ import {
 import { useColorScheme } from 'react-native';
 
 import { useDependencies } from '@/di';
-
-import { type ColorScheme, ThemePreference } from '../types';
-import { createTheme, type Theme } from './theme';
+import { createTheme, type Theme } from '@/presentation/theme/theme';
+import { type ColorScheme, ThemePreference } from '@/presentation/types';
 
 const PREFERENCE_KEY = 'theme-preference';
 

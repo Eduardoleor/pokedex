@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '@/presentation/components/atoms';
+import { StatusMessage } from '@/presentation/components/molecules';
 import {
   InstructionsCarousel,
   OnboardingBackdrop,
@@ -13,18 +14,34 @@ import {
   PokemonStrip,
 } from '@/presentation/components/organisms';
 import { ONBOARDING_STEPS } from '@/presentation/content/onboarding-steps';
+import { getErrorMessage } from '@/presentation/errors';
 import { useAutoplay, useCryById, useOnboardingProgress } from '@/presentation/hooks';
 import { useCaught } from '@/presentation/providers/caught-provider';
+import { useNetwork } from '@/presentation/providers/network-provider';
 import { useOnboarding } from '@/presentation/providers/onboarding-provider';
+import { usePokemonListContext } from '@/presentation/providers/pokemon-data';
 import { useTheme } from '@/presentation/theme';
-import type { ViewHandle } from '@/presentation/types';
+import { RequestStatus, type ViewHandle } from '@/presentation/types';
 
 export default function OnboardingScreen() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
   const { complete, requestReveal } = useOnboarding();
   const { catchPokemon } = useCaught();
-  const { ready, total, isComplete, isOffline } = useOnboardingProgress();
+  const { ready, savedCount, total, isComplete, isOffline } = useOnboardingProgress();
+  const device = useNetwork();
+  const {
+    retry,
+    status: listStatus,
+    error: listError,
+    isOffline: listIsOffline,
+  } = usePokemonListContext();
+  // First launch: nothing is saved yet, so the Pokedex can only be built online.
+  const needsInternet = savedCount === 0 && (listIsOffline || device.isOffline);
+
+  // Online but the download failed (server down, bad response): a different message.
+  const downloadFailed =
+    savedCount === 0 && !needsInternet && listStatus === RequestStatus.Error && listError !== null;
 
   const featured = useAutoplay(ready.length, { intervalMs: 2500 });
   const steps = useAutoplay(ONBOARDING_STEPS.length, { intervalMs: 4500 });
@@ -69,13 +86,41 @@ export default function OnboardingScreen() {
     ? "Offline · we'll save them when you connect"
     : `${ready.length} of ${total} Pokémon saved`;
 
+  if (downloadFailed && listError) {
+    return (
+      <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+        <StatusMessage
+          icon="alert"
+          title="Couldn't download your Pokedex"
+          message={getErrorMessage(listError)}
+          actionLabel="Try again"
+          onAction={retry}
+        />
+      </View>
+    );
+  }
+
+  if (needsInternet) {
+    return (
+      <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
+        <StatusMessage
+          icon="wifi-off"
+          title="Internet required"
+          message="Connect to the internet to download your Pokedex the first time. After that it works offline."
+          actionLabel="Try again"
+          onAction={retry}
+        />
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
       <OnboardingBackdrop pokemon={ready[featured.index]} />
 
       <OnboardingHero
         pokemon={ready[featured.index]}
-        placeholder={isOffline ? 'No connection yet' : 'Getting your Pokédex ready…'}
+        placeholder={isOffline ? 'No connection yet' : 'Getting your Pokedex ready…'}
         topInset={insets.top}
         bottomInset={theme.spacing.lg}
         capture={capture}
