@@ -1,11 +1,10 @@
 import { Pressable, type PressableProps, StyleSheet } from 'react-native';
 
 import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
-import { Text } from './text';
+import { Icon, type IconName } from './icon';
 
 export interface IconButtonProps extends Omit<PressableProps, 'children'> {
-  /** Glyph shown inside the button. */
-  icon: string;
+  icon: IconName;
   accessibilityLabel: string;
 }
 
@@ -23,9 +22,7 @@ export function IconButton({ icon, style, ...rest }: IconButtonProps) {
       ]}
       {...rest}
     >
-      <Text variant="heading" tone="textPrimary" importantForAccessibility="no">
-        {icon}
-      </Text>
+      <Icon name={icon} size={22} />
     </Pressable>
   );
 }

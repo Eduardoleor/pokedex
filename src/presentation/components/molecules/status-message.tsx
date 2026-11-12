@@ -1,10 +1,10 @@
 import { StyleSheet, View } from 'react-native';
 
 import { useTheme } from '../../theme';
-import { Button, Text } from '../atoms';
+import { Button, Icon, type IconName, Text } from '../atoms';
 
 export interface StatusMessageProps {
-  icon: string;
+  icon: IconName;
   title: string;
   message: string;
   actionLabel?: string;
@@ -19,9 +19,7 @@ export function StatusMessage({ icon, title, message, actionLabel, onAction }: S
       accessibilityRole="alert"
       style={[styles.container, { gap: theme.spacing.md, padding: theme.spacing.xl }]}
     >
-      <Text variant="display" align="center" importantForAccessibility="no">
-        {icon}
-      </Text>
+      <Icon name={icon} size={48} tone="textMuted" />
       <Text variant="heading" align="center">
         {title}
       </Text>
@@ -31,7 +29,7 @@ export function StatusMessage({ icon, title, message, actionLabel, onAction }: S
       {actionLabel && onAction ? (
         <Button
           label={actionLabel}
-          icon="↻"
+          icon="refresh"
           onPress={onAction}
           style={{ marginTop: theme.spacing.sm }}
         />

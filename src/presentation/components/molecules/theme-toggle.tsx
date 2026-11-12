@@ -1,6 +1,6 @@
 import { useTheme } from '../../theme';
 import { ThemePreference } from '../../types';
-import { IconButton } from '../atoms';
+import { IconButton, type IconName } from '../atoms';
 
 const NEXT: Record<ThemePreference, ThemePreference> = {
   [ThemePreference.System]: ThemePreference.Light,
@@ -8,10 +8,10 @@ const NEXT: Record<ThemePreference, ThemePreference> = {
   [ThemePreference.Dark]: ThemePreference.System,
 };
 
-const ICONS: Record<ThemePreference, string> = {
-  [ThemePreference.System]: '◐',
-  [ThemePreference.Light]: '☀︎',
-  [ThemePreference.Dark]: '☾',
+const ICONS: Record<ThemePreference, IconName> = {
+  [ThemePreference.System]: 'contrast',
+  [ThemePreference.Light]: 'sun',
+  [ThemePreference.Dark]: 'moon',
 };
 
 export function ThemeToggle() {

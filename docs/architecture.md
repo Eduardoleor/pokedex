@@ -146,11 +146,13 @@ All components are built from React Native primitives (`View`, `Text`, `Pressabl
 
 | Level       | Components                                                                                        |
 | ----------- | ------------------------------------------------------------------------------------------------- |
-| `atoms`     | `Text`, `Button`, `IconButton`, `Spinner`, `Surface`, `Badge`, `Skeleton`, `RemoteImage`          |
+| `atoms`     | `Text`, `Icon`, `Button`, `IconButton`, `Spinner`, `Surface`, `Badge`, `Skeleton`, `RemoteImage`  |
 | `molecules` | `TypeBadge`, `StatBar`, `InfoItem`, `StatusMessage`, `ConnectionBanner`, `ThemeToggle`            |
 | `organisms` | `PokemonCard`, `PokemonGrid`, `PokemonGridSkeleton`, `PokemonDetailView`, `PokemonDetailSkeleton` |
 
 `templates` and `pages` are intentionally left out: with two screens there is no repeated layout, and Expo Router routes already play the role of pages.
+
+Icons are our own SVG set (`atoms/icon.tsx`) drawn with `react-native-svg` on a 24×24 grid with a 2 pt round stroke, so they look the same on iOS and Android and take any theme color. Text glyphs are avoided because each platform renders them with a different font.
 
 Details worth knowing: the grid is a virtualized `FlatList` with 2/3/5 columns depending on width; cards are memoized; skeletons respect the "reduce motion" accessibility setting; text scales with the system font size up to 1.6×.
 

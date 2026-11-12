@@ -1,6 +1,7 @@
 import { Pressable, type PressableProps, StyleSheet, View } from 'react-native';
 
 import { MIN_TOUCH_SIZE, useTheme } from '../../theme';
+import { Icon, type IconName } from './icon';
 import { Spinner } from './spinner';
 import { Text } from './text';
 
@@ -10,8 +11,7 @@ export interface ButtonProps extends Omit<PressableProps, 'children'> {
   label: string;
   variant?: ButtonVariant;
   loading?: boolean;
-  /** Short glyph rendered before the label, e.g. "↻". */
-  icon?: string;
+  icon?: IconName;
 }
 
 export function Button({
@@ -56,9 +56,7 @@ export function Button({
         {loading ? (
           <Spinner color={variant === 'primary' ? theme.colors.onPrimary : theme.colors.primary} />
         ) : icon ? (
-          <Text variant="label" tone={tone} importantForAccessibility="no">
-            {icon}
-          </Text>
+          <Icon name={icon} size={18} tone={tone} />
         ) : null}
         <Text variant="label" tone={tone}>
           {label}

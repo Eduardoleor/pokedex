@@ -25,7 +25,7 @@ export default function PokemonDetailScreen() {
         <PokemonDetailSkeleton />
       ) : (
         <StatusMessage
-          icon={isOffline ? '⌁' : '⚠︎'}
+          icon={isOffline ? 'wifi-off' : 'alert'}
           title={isOffline ? "You're offline" : "Couldn't load this Pokémon"}
           message={error ? getErrorMessage(error) : 'Please try again.'}
           actionLabel="Try again"

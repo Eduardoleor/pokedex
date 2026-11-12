@@ -83,6 +83,7 @@ Full description, folder map and data flow: [docs/architecture.md](docs/architec
 | File-based cache with a 5-day TTL           | React Native ships no storage API and AsyncStorage is a community library. `expo-file-system` is part of the Expo SDK; JSON files fit small, read-mostly data |
 | Stale-while-revalidate                      | Instant screens, background refresh, no data lost when the network fails                                                                                      |
 | Connectivity inferred from requests         | Avoids a network-status library; a failed request is the signal that matters                                                                                  |
+| Own SVG icon set                            | Unicode glyphs render differently per platform; `react-native-svg` is part of the Expo SDK and ships in Expo Go                                               |
 | Hand-made atomic components                 | Required by the challenge; one theme source keeps light/dark consistent                                                                                       |
 
 Details: [docs/architecture.md](docs/architecture.md).
@@ -91,12 +92,13 @@ Details: [docs/architecture.md](docs/architecture.md).
 
 The app uses React Native and the Expo SDK only. Packages that matter for the solution:
 
-| Package            | Use                                                       |
-| ------------------ | --------------------------------------------------------- |
-| `expo-router`      | File-based navigation (list → detail)                     |
-| `expo-file-system` | Persistent offline cache                                  |
-| `expo-image`       | Remote images with disk cache (artwork available offline) |
-| `expo-status-bar`  | Status bar style per theme                                |
+| Package            | Use                                                              |
+| ------------------ | ---------------------------------------------------------------- |
+| `expo-router`      | File-based navigation (list → detail)                            |
+| `expo-file-system` | Persistent offline cache                                         |
+| `expo-image`       | Remote images with disk cache (artwork available offline)        |
+| `react-native-svg` | Renders the app's own SVG icon set identically on both platforms |
+| `expo-status-bar`  | Status bar style per theme                                       |
 
 Dev tooling (ESLint, Prettier, Husky, commitlint, `@expo/fingerprint`) is listed in [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/ci-cd.md](docs/ci-cd.md).
 

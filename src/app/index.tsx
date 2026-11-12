@@ -23,7 +23,7 @@ export default function PokemonListScreen() {
         <PokemonGridSkeleton />
       ) : list.status === RequestStatus.Error && list.items.length === 0 ? (
         <StatusMessage
-          icon={list.isOffline ? '⌁' : '⚠︎'}
+          icon={list.isOffline ? 'wifi-off' : 'alert'}
           title={list.isOffline ? "You're offline" : 'Something went wrong'}
           message={list.error ? getErrorMessage(list.error) : 'Please try again.'}
           actionLabel="Try again"
@@ -31,7 +31,7 @@ export default function PokemonListScreen() {
         />
       ) : list.status === RequestStatus.Success && list.items.length === 0 ? (
         <StatusMessage
-          icon="∅"
+          icon="search"
           title="No Pokémon yet"
           message="Pull down to refresh the list."
           actionLabel="Refresh"
