@@ -1,17 +1,36 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
-import { useDependencies } from '@/di';
+import { usePokemonDetailsContext } from '../providers/pokemon-data';
+import { emptyDetailEntry } from '../providers/pokemon-data/details-reducer';
+import { RequestStatus } from '../types';
 
-import { useAsyncTask } from './use-async-task';
+export function usePokemonDetail(id: number) {
+  const { details, loadDetail } = usePokemonDetailsContext();
+  const entry = details[id] ?? emptyDetailEntry;
+  const isIdle = entry.status === RequestStatus.Idle;
 
-export function usePokemonDetail(idOrName: number | string | undefined) {
-  const { getPokemonDetail } = useDependencies();
+  useEffect(() => {
+    if (isIdle) {
+      loadDetail(id);
+    }
+  }, [id, isIdle, loadDetail]);
 
-  const task = useCallback(
-    (signal: AbortSignal) => getPokemonDetail.execute(idOrName ?? '', signal),
-    [getPokemonDetail, idOrName],
-  );
+  useEffect(() => {
+    // Only one silent attempt: a failed revalidation leaves `error` set.
+    if (entry.isStale && !entry.error) {
+      loadDetail(id, { silent: true });
+    }
+  }, [id, entry.isStale, entry.error, loadDetail]);
 
-  const { data, ...rest } = useAsyncTask(idOrName === undefined ? null : task);
-  return { pokemon: data, ...rest };
+  const reload = useCallback(() => loadDetail(id), [id, loadDetail]);
+
+  return {
+    pokemon: entry.data,
+    status: entry.status,
+    error: entry.error,
+    isLoading: entry.status === RequestStatus.Loading || isIdle,
+    isOffline: entry.isOffline,
+    updatedAt: entry.updatedAt,
+    reload,
+  };
 }
