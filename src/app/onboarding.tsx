@@ -84,11 +84,7 @@ export default function OnboardingScreen() {
 
       <View
         style={[
-          styles.sheet,
           {
-            backgroundColor: theme.colors.surface,
-            borderTopLeftRadius: theme.radius.lg + theme.spacing.sm,
-            borderTopRightRadius: theme.radius.lg + theme.spacing.sm,
             paddingTop: theme.spacing.sm,
             paddingHorizontal: theme.spacing.lg,
             paddingBottom: insets.bottom + theme.spacing.lg,
@@ -96,6 +92,20 @@ export default function OnboardingScreen() {
           },
         ]}
       >
+        {/* The sheet's own surface fades with its content, leaving the blurred backdrop. */}
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            styles.sheetSurface,
+            {
+              backgroundColor: theme.colors.surface,
+              borderTopLeftRadius: theme.radius.lg + theme.spacing.sm,
+              borderTopRightRadius: theme.radius.lg + theme.spacing.sm,
+            },
+            fadeOut,
+          ]}
+        />
         <Animated.View style={[{ marginHorizontal: -theme.spacing.lg }, fadeOut]}>
           <PokemonStrip
             items={ready}
@@ -146,7 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     opacity: 0.7,
   },
-  sheet: {
+  sheetSurface: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: -6 },
     shadowOpacity: 0.12,
