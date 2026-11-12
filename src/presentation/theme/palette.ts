@@ -2,6 +2,14 @@ import { PokemonType } from '@/domain/enums';
 
 import type { ColorScheme } from '../types';
 
+/** Pokéball colors: the red top, the black band and the white bottom. */
+export const pokeball = {
+  red: '#E3350D',
+  redDeep: '#CC0000',
+  black: '#1C1C1E',
+  white: '#FFFFFF',
+} as const;
+
 export interface ColorPalette {
   background: string;
   surface: string;
@@ -13,6 +21,8 @@ export interface ColorPalette {
   textInverse: string;
   primary: string;
   onPrimary: string;
+  /** The Pokéball band: strong outlines and accents. */
+  band: string;
   danger: string;
   warning: string;
   skeleton: string;
@@ -20,34 +30,37 @@ export interface ColorPalette {
 
 export const palettes: Record<ColorScheme, ColorPalette> = {
   light: {
-    background: '#F4F5F7',
-    surface: '#FFFFFF',
-    surfaceMuted: '#ECEEF2',
-    border: '#DFE2E8',
-    textPrimary: '#16181D',
-    textSecondary: '#4A4F5A',
-    textMuted: '#6B7180',
-    textInverse: '#FFFFFF',
-    primary: '#C8102E',
-    onPrimary: '#FFFFFF',
+    background: '#F7F7F8',
+    surface: pokeball.white,
+    surfaceMuted: '#EFEFF1',
+    border: '#E2E2E6',
+    textPrimary: pokeball.black,
+    textSecondary: '#48484A',
+    textMuted: '#6E6E73',
+    textInverse: pokeball.white,
+    // Deep red keeps white labels above WCAG AA (5.9:1).
+    primary: pokeball.redDeep,
+    onPrimary: pokeball.white,
+    band: pokeball.black,
     danger: '#B42318',
     warning: '#8A5A00',
-    skeleton: '#E2E5EA',
+    skeleton: '#E6E6EA',
   },
   dark: {
-    background: '#0F1115',
-    surface: '#181B21',
-    surfaceMuted: '#222630',
-    border: '#2C313C',
-    textPrimary: '#F2F3F5',
-    textSecondary: '#C3C7D0',
-    textMuted: '#9AA0AD',
-    textInverse: '#16181D',
-    primary: '#FF5A6E',
-    onPrimary: '#16181D',
+    background: '#121214',
+    surface: pokeball.black,
+    surfaceMuted: '#2A2A2E',
+    border: '#38383C',
+    textPrimary: '#F5F5F7',
+    textSecondary: '#C7C7CC',
+    textMuted: '#9A9AA0',
+    textInverse: pokeball.black,
+    primary: '#FF453A',
+    onPrimary: '#121214',
+    band: '#000000',
     danger: '#FF8A80',
     warning: '#F2C14E',
-    skeleton: '#262A33',
+    skeleton: '#2A2A2E',
   },
 };
 

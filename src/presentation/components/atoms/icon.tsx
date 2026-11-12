@@ -57,6 +57,14 @@ const ICONS = {
       <Path d="M18.5 5.5a9.2 9.2 0 0 1 0 13" />
     </>
   ),
+  pokeball: () => (
+    <>
+      <Circle cx={12} cy={12} r={9} />
+      <Line x1={3} y1={12} x2={8.6} y2={12} />
+      <Line x1={15.4} y1={12} x2={21} y2={12} />
+      <Circle cx={12} cy={12} r={3.2} />
+    </>
+  ),
   search: () => (
     <>
       <Circle cx={11} cy={11} r={7} />
