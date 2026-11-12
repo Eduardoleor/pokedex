@@ -75,7 +75,7 @@ module.exports = defineConfig([
     },
   },
   {
-    files: ['*.config.js'],
+    files: ['*.config.js', 'plugins/**/*.js'],
     languageOptions: {
       sourceType: 'commonjs',
       globals: {
