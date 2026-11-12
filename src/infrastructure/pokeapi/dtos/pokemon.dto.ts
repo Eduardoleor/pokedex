@@ -26,6 +26,11 @@ export interface PokemonSpritesDto {
   };
 }
 
+export interface PokemonCriesDto {
+  latest: string | null;
+  legacy: string | null;
+}
+
 export interface PokemonDto {
   id: number;
   name: string;
@@ -36,4 +41,6 @@ export interface PokemonDto {
   abilities: PokemonAbilitySlotDto[];
   stats: PokemonStatDto[];
   sprites: PokemonSpritesDto;
+  /** Missing in older API responses. */
+  cries?: PokemonCriesDto;
 }

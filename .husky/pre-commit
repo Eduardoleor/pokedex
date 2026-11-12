@@ -6,3 +6,5 @@ if [ "$branch" = "main" ]; then
 fi
 
 pnpm exec lint-staged
+
+pnpm typecheck

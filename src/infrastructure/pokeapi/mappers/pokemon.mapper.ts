@@ -56,5 +56,7 @@ export function toPokemonDetail(dto: PokemonDto): PokemonDetail {
     height: dto.height / DECI_TO_UNIT,
     weight: dto.weight / DECI_TO_UNIT,
     baseExperience: dto.base_experience,
+    // `latest` exists for every Pokémon; `legacy` is missing for newer generations.
+    cryUrl: dto.cries?.latest ?? null,
   };
 }

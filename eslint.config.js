@@ -109,6 +109,13 @@ module.exports = defineConfig([
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
+      // `any` must not leak through the code, including implicit "evolving" any (`let x;`).
+      '@typescript-eslint/no-unsafe-assignment': 'error',
+      '@typescript-eslint/no-unsafe-member-access': 'error',
+      '@typescript-eslint/no-unsafe-argument': 'error',
+      '@typescript-eslint/no-unsafe-call': 'error',
+      '@typescript-eslint/no-unsafe-return': 'error',
+      '@typescript-eslint/init-declarations': ['error', 'always'],
     },
   },
 ]);

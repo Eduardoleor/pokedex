@@ -37,15 +37,16 @@ src/
     models/        PokemonSummary, PokemonDetail, PokemonStat, PokemonAbility
     enums/         PokemonType, StatName, DataSource (+ type guards)
     types/         Page, PageRequest, Cached
-    ports/         PokemonRepository, CacheStore
+    ports/         PokemonRepository, CacheStore, MediaCache, SoundPlayer
     errors/        AppError, ErrorKind, toAppError
   application/
     cache/         CachePolicy (5-day TTL), cachedQuery (stale-while-revalidate)
-    use-cases/     GetPokemonPage, GetPokemonDetail
+    use-cases/     GetPokemonPage, GetPokemonDetail, PlayPokemonCry
   infrastructure/
     http/          FetchHttpClient and its types
     pokeapi/       PokeApiPokemonRepository, dtos/, mappers/, config
-    storage/       FileSystemCacheStore, MemoryCacheStore
+    storage/       FileSystemCacheStore, MemoryCacheStore, FileSystemMediaCache
+    audio/         AudioApiSoundPlayer
   presentation/
     providers/     PokemonDataProvider (list + details contexts, background sync)
     theme/         ThemeProvider, palettes (light/dark), tokens
@@ -129,6 +130,19 @@ Goal: the app opens instantly with saved data, works without a connection for ev
 | Pull to refresh     | Forces the network for the first page; on failure the saved list stays                                                           |
 
 Connectivity is inferred from request results (`ErrorKind.Network` / `Timeout`), so no network-status library is needed. Data is never discarded because the network failed; it is only replaced by a successful response.
+
+## Pokémon cries
+
+PokéAPI exposes `cries.latest` for every Pokémon. Most files are **Ogg Vorbis** (a few are MP3 under the same `.ogg` name), and iOS cannot decode Ogg Vorbis with its built-in players, so `expo-audio` was not enough.
+
+| Piece                  | Role                                                                                                   |
+| ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| `PlayPokemonCry`       | Use case: downloads the cry once through `MediaCache`, then plays it through `SoundPlayer`             |
+| `FileSystemMediaCache` | Saves the file in the documents directory; later plays work offline                                    |
+| `AudioApiSoundPlayer`  | `react-native-audio-api`: decodes in native code (OS decoder, then miniaudio + libvorbis) and plays it |
+| `CryButton`            | Loading, playing and error states; disabled with a hint when offline and the cry was never downloaded  |
+
+Cries are downloaded only when the user taps the button, never by the background prefetch, to avoid spending data on audio nobody asked for. The audio session uses the `playback` category so a cry is heard with the silent switch on, and the library's config plugin is set without background audio or foreground-service permissions.
 
 ## Theme
 

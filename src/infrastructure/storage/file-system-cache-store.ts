@@ -3,7 +3,7 @@ import { Directory, File, Paths } from 'expo-file-system';
 import type { CacheEntry, CacheStore } from '@/domain/ports';
 
 /** Bump when the shape of saved data changes; old files are ignored and removed. */
-const CACHE_VERSION = 1;
+const CACHE_VERSION = 2;
 
 function isCacheEntry(value: unknown): value is CacheEntry<unknown> {
   return (
@@ -27,6 +27,7 @@ export class FileSystemCacheStore implements CacheStore {
     private readonly now: () => number = () => Date.now(),
   ) {
     this.directory = new Directory(Paths.document, `${namespace}-v${CACHE_VERSION}`);
+    this.removeOldVersions(namespace);
   }
 
   async get<T>(key: string): Promise<CacheEntry<T> | null> {
@@ -67,6 +68,19 @@ export class FileSystemCacheStore implements CacheStore {
       this.directory.delete();
     }
     return Promise.resolve();
+  }
+
+  private removeOldVersions(namespace: string): void {
+    for (let version = 1; version < CACHE_VERSION; version++) {
+      const outdated = new Directory(Paths.document, `${namespace}-v${version}`);
+      try {
+        if (outdated.exists) {
+          outdated.delete();
+        }
+      } catch {
+        // Best effort: an undeletable folder is simply ignored.
+      }
+    }
   }
 
   private fileFor(key: string): File {
