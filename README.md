@@ -38,11 +38,32 @@
 
 ## Demo
 
-A full walkthrough, from the first launch to the trainer profile: [`docs/demo/pokedex-demo.mp4`](docs/demo/pokedex-demo.mp4) (98 s, 720p).
+<p align="center">
+  <img src="docs/demo/pokedex-demo.gif" alt="Walkthrough: onboarding, catching, search, detail, caught list and trainer profile" width="300" />
+</p>
 
-It covers the paced onboarding download, the Poké Ball throw and hand-off to the home screen, search, catching Pikachu from its detail, the previous / next navigation, the caught list and the trainer profile.
+<p align="center"><sub>Shown at 3x speed. Full video: <a href="docs/demo/pokedex-demo.mp4"><code>docs/demo/pokedex-demo.mp4</code></a> (98 s, 720p).</sub></p>
 
-Store-ready screenshots (advertisement style, one idea per screen) live in [`docs/store`](docs/store):
+It covers the paced onboarding download, the Poké Ball throw and hand-off to the home screen, search, catching Pikachu from its detail, previous / next, the caught list and the trainer profile.
+
+### Screenshots
+
+<table>
+  <tr>
+    <td><img src="docs/store/ios/01-onboarding.png" alt="Onboarding: throw a Poké Ball" width="220" /></td>
+    <td><img src="docs/store/ios/02-gotcha.png" alt="Catching Pikachu from its detail" width="220" /></td>
+    <td><img src="docs/store/ios/03-home.png" alt="Pokedex list with search and filters" width="220" /></td>
+    <td><img src="docs/store/ios/04-detail-hero.png" alt="Pokémon detail hero" width="220" /></td>
+  </tr>
+  <tr>
+    <td><img src="docs/store/ios/05-detail-stats.png" alt="Base stats, type matchups and previous / next" width="220" /></td>
+    <td><img src="docs/store/ios/06-caught.png" alt="Caught Pokémon" width="220" /></td>
+    <td><img src="docs/store/ios/07-profile.png" alt="Trainer profile" width="220" /></td>
+    <td></td>
+  </tr>
+</table>
+
+Store-ready versions (advertisement style, one idea per screen):
 
 | Store                   | Size      | Folder                                     |
 | ----------------------- | --------- | ------------------------------------------ |
