@@ -47,7 +47,12 @@ function PokemonThumbComponent({ pokemon, selected, onPress }: PokemonThumbProps
       <View
         style={[
           styles.shadow,
-          { borderRadius: theme.radius.pill, transform: [{ scale: selected ? 1.12 : 1 }] },
+          {
+            borderRadius: theme.radius.pill,
+            // A solid background lets iOS compute the shadow cheaply (no per-frame warnings).
+            backgroundColor: theme.colors.surfaceMuted,
+            transform: [{ scale: selected ? 1.12 : 1 }],
+          },
         ]}
       >
         <Pressable

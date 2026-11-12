@@ -1,6 +1,7 @@
 export { CatchBurst, type CatchBurstProps } from './catch-burst';
 export { ConnectionBanner, type ConnectionBannerProps } from './connection-banner';
 export { CryButton, type CryButtonProps } from './cry-button';
+export { GrowingBall, type GrowingBallProps } from './growing-ball';
 export { InfoItem, type InfoItemProps } from './info-item';
 export { InstructionCard } from './instruction-card';
 export { PokemonThumb, type PokemonThumbProps, THUMB_SIZE } from './pokemon-thumb';

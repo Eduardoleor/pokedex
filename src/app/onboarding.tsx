@@ -30,6 +30,8 @@ export default function OnboardingScreen() {
   const steps = useAutoplay(ONBOARDING_STEPS.length, { intervalMs: 4500 });
   const playCry = useCryById();
   const [capture] = useState(() => new Animated.Value(0));
+  // Everything but the ball and the Pokémon fades while the Pokémon is pulled in.
+  const fadeOut = { opacity: capture.interpolate({ inputRange: [0, 1], outputRange: [1, 0] }) };
   const artworkRef = useRef<ViewHandle>(null);
 
   const { select: selectFeatured } = featured;
@@ -94,21 +96,23 @@ export default function OnboardingScreen() {
           },
         ]}
       >
-        <View style={{ marginHorizontal: -theme.spacing.lg }}>
+        <Animated.View style={[{ marginHorizontal: -theme.spacing.lg }, fadeOut]}>
           <PokemonStrip
             items={ready}
             selectedIndex={featured.index}
             onSelect={onSelectPokemon}
             onInteraction={featured.pause}
           />
-        </View>
+        </Animated.View>
 
-        <InstructionsCarousel
-          steps={ONBOARDING_STEPS}
-          index={steps.index}
-          onSelect={steps.select}
-          onInteraction={steps.pause}
-        />
+        <Animated.View style={fadeOut}>
+          <InstructionsCarousel
+            steps={ONBOARDING_STEPS}
+            index={steps.index}
+            onSelect={steps.select}
+            onInteraction={steps.pause}
+          />
+        </Animated.View>
 
         <PokeballLauncher
           targetRef={artworkRef}
@@ -118,15 +122,17 @@ export default function OnboardingScreen() {
           onCaught={start}
         />
 
-        <Text
-          variant="caption"
-          tone="textMuted"
-          align="center"
-          accessibilityLiveRegion="polite"
-          style={styles.footerText}
-        >
-          {status}
-        </Text>
+        <Animated.View style={fadeOut}>
+          <Text
+            variant="caption"
+            tone="textMuted"
+            align="center"
+            accessibilityLiveRegion="polite"
+            style={styles.footerText}
+          >
+            {status}
+          </Text>
+        </Animated.View>
       </View>
     </View>
   );

@@ -1,10 +1,18 @@
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { Animated, Easing, type GestureResponderEvent, StyleSheet, View } from 'react-native';
+import {
+  Animated,
+  Easing,
+  type GestureResponderEvent,
+  StyleSheet,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { useReduceMotion } from '../../hooks/use-reduce-motion';
 import type { ViewHandle } from '../../types';
 import { Pokeball } from '../atoms';
-import { CatchBurst, StickerLabel } from '../molecules';
+import { ballFillDiameter } from '../atoms/pokeball-geometry';
+import { CatchBurst, GrowingBall, StickerLabel } from '../molecules';
 
 const BALL_SIZE = 92;
 /** Upward speed (px/ms) or distance (px) that counts as a throw. */
@@ -14,8 +22,8 @@ const THROW_DISTANCE = 110;
 const TAP_SLOP = 6;
 /** Where the ball lands after the catch, below the target's center. */
 const DROP_OFFSET = 70;
-/** Scale at which the ball covers any phone screen. */
-const GROW_TO_FILL = 22;
+/** Ball scale right before it grows, so the growing ball starts at the same size. */
+const CLICK_SCALE = 1.06;
 
 export interface PokeballLauncherProps {
   /** View the ball flies to (the featured Pokémon). */
@@ -65,6 +73,7 @@ export function PokeballLauncher({
   onCaught,
 }: PokeballLauncherProps) {
   const reduceMotion = useReduceMotion();
+  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
   const restRef = useRef<ViewHandle>(null);
   const drag = useRef<DragState>({ startX: 0, startY: 0, lastY: 0, lastTime: 0, velocityY: 0 });
 
@@ -75,6 +84,11 @@ export function PokeballLauncher({
   const [scale] = useState(() => new Animated.Value(1));
   const [open] = useState(() => new Animated.Value(0));
   const [burst] = useState(() => new Animated.Value(0));
+  const [diameter] = useState(() => new Animated.Value(BALL_SIZE * CLICK_SCALE));
+  const [growX] = useState(() => new Animated.Value(0));
+  const [growY] = useState(() => new Animated.Value(0));
+  const [growOpacity] = useState(() => new Animated.Value(0));
+  const [ballOpacity] = useState(() => new Animated.Value(1));
   const [labelOpacity] = useState(() => new Animated.Value(1));
   const [isThrown, setIsThrown] = useState(false);
 
@@ -112,6 +126,18 @@ export function PokeballLauncher({
     ]);
     const target =
       from && to ? { x: to.x - from.x, y: to.y - from.y } : { x: 0, y: -BALL_SIZE * 3 };
+
+    // Where the ball ends up, and how far that is from the screen's center.
+    const landing = from
+      ? { x: from.x + target.x, y: from.y + target.y + DROP_OFFSET }
+      : { x: windowWidth / 2, y: windowHeight / 2 };
+    const toCenter = { x: windowWidth / 2 - landing.x, y: windowHeight / 2 - landing.y };
+    const fillDiameter = ballFillDiameter(windowWidth, windowHeight);
+    const growTiming = {
+      duration: 560,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: false,
+    } as const;
 
     const grow = (toValue: number) =>
       Animated.timing(scale, {
@@ -157,28 +183,35 @@ export function PokeballLauncher({
       // Each wobble the ball grows a little, building up to the catch.
       Animated.parallel([wobble(), grow(0.82)]),
       Animated.parallel([wobble(), grow(0.94)]),
-      Animated.parallel([wobble(), grow(1.06)]),
+      Animated.parallel([wobble(), grow(CLICK_SCALE)]),
       Animated.timing(burst, {
         toValue: 1,
         duration: 650,
         easing: Easing.out(Easing.cubic),
         useNativeDriver: false,
       }),
-      // Fills the screen with the ball; the home screen opens it (see PokeballReveal).
-      Animated.timing(scale, {
-        toValue: GROW_TO_FILL,
-        duration: 520,
-        easing: Easing.in(Easing.cubic),
-        useNativeDriver: false,
-      }),
+      // Hand over to the view-built ball and grow it while sliding to the screen's center,
+      // where the home screen opens it (see PokeballReveal).
+      Animated.parallel([
+        Animated.timing(ballOpacity, { toValue: 0, duration: 60, useNativeDriver: false }),
+        Animated.timing(growOpacity, { toValue: 1, duration: 60, useNativeDriver: false }),
+        Animated.timing(diameter, { toValue: fillDiameter, ...growTiming }),
+        Animated.timing(growX, { toValue: toCenter.x, ...growTiming }),
+        Animated.timing(growY, { toValue: toCenter.y, ...growTiming }),
+      ]),
     ]).start(({ finished }) => {
       if (finished) {
         onCaught();
       }
     });
   }, [
+    ballOpacity,
     burst,
     capture,
+    diameter,
+    growOpacity,
+    growX,
+    growY,
     isThrown,
     labelOpacity,
     onCaught,
@@ -190,6 +223,8 @@ export function PokeballLauncher({
     spin,
     targetRef,
     tilt,
+    windowHeight,
+    windowWidth,
   ]);
 
   const returnToRest = useCallback(() => {
@@ -273,10 +308,25 @@ export function PokeballLauncher({
             onResponderMove={onMove}
             onResponderRelease={onRelease}
             onResponderTerminate={returnToRest}
-            style={[styles.ball, { transform: [{ rotate }, { rotate: wobbleRotate }, { scale }] }]}
+            style={[
+              styles.ball,
+              {
+                opacity: ballOpacity,
+                transform: [{ rotate }, { rotate: wobbleRotate }, { scale }],
+              },
+            ]}
           >
+            {/* Solid circle that carries the shadow; the SVG itself has no background. */}
+            <View style={styles.ballShadow} />
             <Pokeball size={BALL_SIZE} open={open} />
           </Animated.View>
+          <GrowingBall
+            diameter={diameter}
+            fillDiameter={ballFillDiameter(windowWidth, windowHeight)}
+            opacity={growOpacity}
+            translateX={growX}
+            translateY={growY}
+          />
         </Animated.View>
       </View>
 
@@ -291,6 +341,8 @@ const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
+    // Above the footer so the growing ball covers it too.
+    zIndex: 20,
   },
   layer: {
     zIndex: 10,
@@ -303,8 +355,16 @@ const styles = StyleSheet.create({
 
   ball: {
     zIndex: 10,
-    // Without a radius the web shadow is drawn as a square box.
     borderRadius: BALL_SIZE / 2,
+  },
+  ballShadow: {
+    position: 'absolute',
+    top: 4,
+    left: 4,
+    width: BALL_SIZE - 8,
+    height: BALL_SIZE - 8,
+    borderRadius: BALL_SIZE / 2,
+    backgroundColor: '#FFFFFF',
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,

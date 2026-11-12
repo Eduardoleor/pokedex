@@ -3,16 +3,23 @@ import { Animated, Easing, StyleSheet, useWindowDimensions, View } from 'react-n
 
 import { useReduceMotion } from '../../hooks/use-reduce-motion';
 import { pokeball } from '../../theme';
-
-const BAND = 18;
-const BUTTON = 64;
+import {
+  ballFillDiameter,
+  BAND_RATIO,
+  BUTTON_INNER_RATIO,
+  BUTTON_RATIO,
+} from '../atoms/pokeball-geometry';
 
 /**
  * Full-screen Poké Ball that splits open over the screen underneath: the continuation of
  * the onboarding catch, where the ball grows until it covers everything.
  */
 export function PokeballReveal({ onDone }: { onDone: () => void }) {
-  const { height } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
+  const diameter = ballFillDiameter(width, height);
+  const band = diameter * BAND_RATIO;
+  const button = diameter * BUTTON_RATIO;
+  const buttonInner = diameter * BUTTON_INNER_RATIO;
   const reduceMotion = useReduceMotion();
   const [progress] = useState(() => new Animated.Value(0));
 
@@ -33,21 +40,34 @@ export function PokeballReveal({ onDone }: { onDone: () => void }) {
   }, [onDone, progress, reduceMotion]);
 
   const half = height / 2;
-  const up = progress.interpolate({ inputRange: [0, 1], outputRange: [0, -half - BAND] });
-  const down = progress.interpolate({ inputRange: [0, 1], outputRange: [0, half + BAND] });
+  const up = progress.interpolate({ inputRange: [0, 1], outputRange: [0, -half - band] });
+  const down = progress.interpolate({ inputRange: [0, 1], outputRange: [0, half + band] });
   const buttonScale = progress.interpolate({ inputRange: [0, 0.3, 1], outputRange: [1, 1.15, 0] });
 
   return (
     <View pointerEvents="none" style={StyleSheet.absoluteFill} accessibilityElementsHidden>
       <Animated.View style={[styles.top, { height: half, transform: [{ translateY: up }] }]}>
-        <View style={styles.bandTop} />
+        <View style={[styles.bandHalf, { height: band / 2 }]} />
       </Animated.View>
       <Animated.View style={[styles.bottom, { height: half, transform: [{ translateY: down }] }]}>
-        <View style={styles.bandBottom} />
+        <View style={[styles.bandHalf, { height: band / 2 }]} />
       </Animated.View>
       <View style={styles.center}>
-        <Animated.View style={[styles.button, { transform: [{ scale: buttonScale }] }]}>
-          <View style={styles.buttonInner} />
+        <Animated.View
+          style={[
+            styles.button,
+            { width: button, height: button, borderRadius: button / 2 },
+            { transform: [{ scale: buttonScale }] },
+          ]}
+        >
+          <View
+            style={{
+              width: buttonInner,
+              height: buttonInner,
+              borderRadius: buttonInner / 2,
+              backgroundColor: pokeball.white,
+            }}
+          />
         </Animated.View>
       </View>
     </View>
@@ -70,12 +90,7 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: pokeball.white,
   },
-  bandTop: {
-    height: BAND / 2,
-    backgroundColor: pokeball.black,
-  },
-  bandBottom: {
-    height: BAND / 2,
+  bandHalf: {
     backgroundColor: pokeball.black,
   },
   center: {
@@ -84,17 +99,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   button: {
-    width: BUTTON,
-    height: BUTTON,
-    borderRadius: BUTTON / 2,
     backgroundColor: pokeball.black,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonInner: {
-    width: BUTTON * 0.6,
-    height: BUTTON * 0.6,
-    borderRadius: BUTTON * 0.3,
-    backgroundColor: pokeball.white,
   },
 });
