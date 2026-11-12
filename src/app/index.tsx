@@ -1,20 +1,29 @@
 import { useCallback } from 'react';
 
-import { router, Stack } from 'expo-router';
+import { Redirect, router, Stack } from 'expo-router';
 
 import type { PokemonSummary } from '@/domain/models';
 import { ConnectionBanner, StatusMessage, ThemeToggle } from '@/presentation/components/molecules';
 import { PokemonGrid, PokemonGridSkeleton } from '@/presentation/components/organisms';
 import { getErrorMessage } from '@/presentation/errors';
 import { usePokemonList } from '@/presentation/hooks';
-import { RequestStatus } from '@/presentation/types';
+import { useOnboarding } from '@/presentation/providers/onboarding-provider';
+import { OnboardingStatus, RequestStatus } from '@/presentation/types';
 
 export default function PokemonListScreen() {
   const list = usePokemonList();
+  const onboarding = useOnboarding();
 
   const openDetail = useCallback((pokemon: PokemonSummary) => {
     router.push({ pathname: '/pokemon/[id]', params: { id: String(pokemon.id) } });
   }, []);
+
+  if (onboarding.status === OnboardingStatus.Loading) {
+    return null;
+  }
+  if (onboarding.status === OnboardingStatus.Pending) {
+    return <Redirect href="/onboarding" />;
+  }
 
   return (
     <>

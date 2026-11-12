@@ -2,6 +2,8 @@ export { Badge, type BadgeProps } from './badge';
 export { Button, type ButtonProps } from './button';
 export { Icon, type IconName, type IconProps } from './icon';
 export { IconButton, type IconButtonProps } from './icon-button';
+export { PageDots, type PageDotsProps } from './page-dots';
+export { ProgressBar, type ProgressBarProps } from './progress-bar';
 export { RemoteImage, type RemoteImageProps } from './remote-image';
 export { Skeleton, type SkeletonProps } from './skeleton';
 export { Spinner } from './spinner';
