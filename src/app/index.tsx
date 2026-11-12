@@ -1,14 +1,14 @@
-import { type ReactElement, useCallback } from 'react';
-import { Platform } from 'react-native';
+import { useCallback } from 'react';
 
 import { Redirect, router, Stack, useIsFocused } from 'expo-router';
 
 import type { PokemonSummary } from '@/domain/models';
 import {
   ConnectionBanner,
+  HomeHeader,
   PokeballHeaderButton,
+  ProfileHeaderButton,
   StatusMessage,
-  ThemeToggle,
 } from '@/presentation/components/molecules';
 import {
   PokeballReveal,
@@ -31,6 +31,19 @@ export default function PokemonListScreen() {
     router.push({ pathname: '/pokemon/[id]', params: { id: String(pokemon.id) } });
   }, []);
 
+  const pokeballButton = (
+    <PokeballHeaderButton
+      count={caught.items.length}
+      // Waits until the home is on screen (after the opening ball or coming back
+      // from a catch in the detail) so the shake is actually seen.
+      celebrate={caught.hasNewCatch && isFocused && !onboarding.isRevealPending}
+      onCelebrated={caught.acknowledgeCatch}
+      onPress={() => router.push('/caught')}
+    />
+  );
+  const showsSkeleton = list.isLoading && list.items.length === 0;
+  const profileButton = <ProfileHeaderButton onPress={() => router.push('/profile')} />;
+
   if (onboarding.status === OnboardingStatus.Loading) {
     return null;
   }
@@ -42,23 +55,16 @@ export default function PokemonListScreen() {
     <>
       <Stack.Screen
         options={{
-          title: 'Pokédex',
-          // The opening ball covers the whole screen, header included.
-          headerShown: !onboarding.isRevealPending,
-          ...headerItems(
-            <PokeballHeaderButton
-              count={caught.items.length}
-              // Waits until the home is on screen (after the opening ball or coming back
-              // from a catch in the detail) so the shake is actually seen.
-              celebrate={caught.hasNewCatch && isFocused && !onboarding.isRevealPending}
-              onCelebrated={caught.acknowledgeCatch}
-              onPress={() => router.push('/caught')}
-            />,
-            <ThemeToggle />,
-          ),
+          title: 'Pokedex',
+          // Drawn by HomeHeader below instead of the native bar.
+          headerShown: false,
         }}
       />
-      {list.isLoading && list.items.length === 0 ? (
+      {/* The opening ball covers the whole screen, header included. */}
+      {onboarding.isRevealPending ? null : (
+        <HomeHeader left={pokeballButton} title="Pokedex" right={profileButton} />
+      )}
+      {showsSkeleton ? (
         <PokemonGridSkeleton />
       ) : list.status === RequestStatus.Error && list.items.length === 0 ? (
         <StatusMessage
@@ -100,22 +106,4 @@ export default function PokemonListScreen() {
       ) : null}
     </>
   );
-}
-
-/**
- * On iOS 26 header buttons sit in a shared glass bubble that turns pink over the red
- * header; custom items without that background keep the buttons clean.
- */
-function headerItems(left: ReactElement, right: ReactElement) {
-  if (Platform.OS === 'ios') {
-    return {
-      unstable_headerLeftItems: () => [
-        { type: 'custom' as const, element: left, hidesSharedBackground: true },
-      ],
-      unstable_headerRightItems: () => [
-        { type: 'custom' as const, element: right, hidesSharedBackground: true },
-      ],
-    };
-  }
-  return { headerLeft: () => left, headerRight: () => right };
 }

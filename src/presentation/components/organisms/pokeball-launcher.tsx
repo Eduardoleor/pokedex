@@ -10,6 +10,7 @@ import {
 
 import { useReduceMotion } from '../../hooks/use-reduce-motion';
 import type { ViewHandle } from '../../types';
+import { haptics } from '../../utils';
 import { Pokeball } from '../atoms';
 import { ballFillDiameter } from '../atoms/pokeball-geometry';
 import { CatchBurst, GrowingBall, StickerLabel } from '../molecules';
@@ -34,6 +35,8 @@ export interface PokeballLauncherProps {
   label: string;
   onThrow: () => void;
   onCaught: () => void;
+  /** True while a finger holds the ball, so a parent scroll view can stay still. */
+  onDragChange?: (dragging: boolean) => void;
   /**
    * `grow`: after the click the ball fills the screen (the onboarding hand-off).
    * `stay`: the ball rests where it landed, for catches inside a screen.
@@ -54,6 +57,18 @@ interface DragState {
   lastY: number;
   lastTime: number;
   velocityY: number;
+}
+
+/** An animation step that fires `effect` (a haptic) when the sequence reaches it. */
+function cue(effect: () => void): Animated.CompositeAnimation {
+  return {
+    start: (done) => {
+      effect();
+      done?.({ finished: true });
+    },
+    stop: () => undefined,
+    reset: () => undefined,
+  };
 }
 
 function measureCenter(view: ViewHandle | null): Promise<Point | null> {
@@ -78,6 +93,7 @@ export function PokeballLauncher({
   label,
   onThrow,
   onCaught,
+  onDragChange,
   finale = 'grow',
   size: ballSize = DEFAULT_BALL_SIZE,
 }: PokeballLauncherProps) {
@@ -122,6 +138,7 @@ export function PokeballLauncher({
     }
     setIsThrown(true);
     onThrow();
+    haptics.medium();
     Animated.timing(labelOpacity, { toValue: 0, duration: 200, useNativeDriver: false }).start();
 
     if (reduceMotion) {
@@ -174,6 +191,7 @@ export function PokeballLauncher({
         Animated.timing(spin, { toValue: 1, duration: 480, useNativeDriver: false }),
         Animated.timing(scale, { toValue: 0.7, duration: 480, useNativeDriver: false }),
       ]),
+      cue(haptics.medium),
       Animated.timing(open, { toValue: 1, duration: 160, useNativeDriver: false }),
       Animated.timing(capture, {
         toValue: 1,
@@ -182,6 +200,7 @@ export function PokeballLauncher({
         useNativeDriver: false,
       }),
       Animated.timing(open, { toValue: 0, duration: 140, useNativeDriver: false }),
+      cue(haptics.heavy),
       Animated.spring(pan, {
         toValue: { x: target.x, y: target.y + DROP_OFFSET },
         bounciness: 12,
@@ -189,9 +208,10 @@ export function PokeballLauncher({
         useNativeDriver: false,
       }),
       // Each wobble the ball grows a little, building up to the catch.
-      Animated.parallel([wobble(), grow(0.82)]),
-      Animated.parallel([wobble(), grow(0.94)]),
-      Animated.parallel([wobble(), grow(CLICK_SCALE)]),
+      Animated.parallel([cue(haptics.light), wobble(), grow(0.82)]),
+      Animated.parallel([cue(haptics.light), wobble(), grow(0.94)]),
+      Animated.parallel([cue(haptics.light), wobble(), grow(CLICK_SCALE)]),
+      cue(haptics.success),
       Animated.timing(burst, {
         toValue: 1,
         duration: 650,
@@ -255,8 +275,9 @@ export function PokeballLauncher({
         velocityY: 0,
       };
       bob.setValue(0);
+      onDragChange?.(true);
     },
-    [bob],
+    [bob, onDragChange],
   );
 
   const onMove = useCallback(
@@ -280,6 +301,7 @@ export function PokeballLauncher({
       const dy = nativeEvent.pageY - startY;
       const isTap = Math.abs(dx) < TAP_SLOP && Math.abs(dy) < TAP_SLOP;
       const isThrow = velocityY < -THROW_VELOCITY || dy < -THROW_DISTANCE;
+      onDragChange?.(false);
 
       if (isTap || isThrow) {
         void throwBall();
@@ -287,7 +309,7 @@ export function PokeballLauncher({
         returnToRest();
       }
     },
-    [returnToRest, throwBall],
+    [onDragChange, returnToRest, throwBall],
   );
 
   const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '720deg'] });
@@ -316,12 +338,22 @@ export function PokeballLauncher({
         >
           <CatchBurst size={ballSize} glow={open} burst={burst} />
           <Animated.View
+            // The native scroll view would claim the pan before the JS responder sees it,
+            // so scrolling is locked the moment a finger lands on the ball.
+            onTouchStart={() => !isThrown && onDragChange?.(true)}
+            onTouchEnd={() => onDragChange?.(false)}
+            onTouchCancel={() => onDragChange?.(false)}
             onStartShouldSetResponder={() => !isThrown}
             onMoveShouldSetResponder={() => !isThrown}
             onResponderGrant={onGrant}
             onResponderMove={onMove}
             onResponderRelease={onRelease}
-            onResponderTerminate={returnToRest}
+            // A scroll view must not take the gesture away mid-throw.
+            onResponderTerminationRequest={() => false}
+            onResponderTerminate={() => {
+              onDragChange?.(false);
+              returnToRest();
+            }}
             style={[
               styles.ball,
               {

@@ -7,3 +7,4 @@ export type {
   PokemonStatDto,
   PokemonTypeSlotDto,
 } from './pokemon.dto';
+export type { TypeDto } from './type.dto';

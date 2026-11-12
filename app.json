@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Pokédex",
+    "name": "Pokedex",
     "slug": "pokedex-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -8,15 +8,18 @@
     "scheme": "pokedexapp",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": {
+        "light": "./assets/brand/icon.png",
+        "dark": "./assets/brand/icon-dark.png",
+        "tinted": "./assets/brand/icon-tinted.png"
+      },
       "bundleIdentifier": "com.eduardoleor.pokedex"
     },
     "android": {
       "package": "com.eduardoleor.pokedex",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#E3350D",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
@@ -30,9 +33,13 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
+          "backgroundColor": "#F7F7F8",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 200,
+          "dark": {
+            "backgroundColor": "#121214",
+            "image": "./assets/images/splash-icon-dark.png"
+          }
         }
       ],
       "./plugins/with-android-build-speed",

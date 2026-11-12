@@ -9,7 +9,7 @@ export interface OnboardingStep {
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   {
     icon: 'pokeball',
-    title: 'Your Pokédex, ready to go',
+    title: 'Your Pokedex, ready to go',
     body: 'We are saving the first Pokémon on your device while you read this.',
   },
   {
@@ -28,7 +28,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
     body: 'Open a Pokémon and tap “Play cry”. Once played, it works offline too.',
   },
   {
-    icon: 'contrast',
+    icon: 'device',
     title: 'Light or dark',
     body: 'The app follows your system theme. Use the button in the header to choose one.',
   },

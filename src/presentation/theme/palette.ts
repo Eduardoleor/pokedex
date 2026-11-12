@@ -38,7 +38,7 @@ export interface ColorPalette {
   onHeader: string;
   /** Warm backdrop behind each artwork. */
   artwork: string;
-  /** Pokédex number pill, in the wordmark colors. */
+  /** Pokedex number pill, in the wordmark colors. */
   dexPill: string;
   onDexPill: string;
   /** Pokémon names on cards. */

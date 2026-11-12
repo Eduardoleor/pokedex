@@ -5,4 +5,5 @@ export {
   type PokemonListContextValue,
   usePokemonDetailsContext,
   usePokemonListContext,
+  useResetSyncedData,
 } from './pokemon-data-provider';

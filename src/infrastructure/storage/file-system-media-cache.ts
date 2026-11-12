@@ -33,6 +33,13 @@ export class FileSystemMediaCache implements MediaCache {
     }
   }
 
+  clear(): Promise<void> {
+    if (this.directory.exists) {
+      this.directory.delete();
+    }
+    return Promise.resolve();
+  }
+
   private fileFor(key: string): File {
     return new File(this.directory, key);
   }

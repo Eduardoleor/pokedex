@@ -9,3 +9,9 @@ export { Skeleton, type SkeletonProps } from './skeleton';
 export { Spinner, type SpinnerProps } from './spinner';
 export { Surface, type SurfaceProps } from './surface';
 export { Text, type TextProps } from './text';
+export {
+  TrainerAvatar,
+  type TrainerAvatarProps,
+  TrainerPortrait,
+  type TrainerPortraitProps,
+} from './trainer-avatar';

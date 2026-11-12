@@ -15,7 +15,7 @@ export function normalizeSearch(value: string): string {
 }
 
 /**
- * Matches by name or Pokédex number. Every word of the query must appear in the name
+ * Matches by name or Pokedex number. Every word of the query must appear in the name
  * ("mime mr" finds Mr. Mime), and "#25", "025" or "25" find Pikachu by number.
  */
 export function matchesPokemon(pokemon: PokemonSummary, rawQuery: string): boolean {

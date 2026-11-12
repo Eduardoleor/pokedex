@@ -11,11 +11,14 @@ import {
 } from 'react';
 import { AppState } from 'react-native';
 
+import { Image } from 'expo-image';
+
 import { DEFAULT_CACHE_POLICY } from '@/application/cache';
 import { useDependencies } from '@/di';
 import { ErrorKind, toAppError } from '@/domain/errors';
 
 import { RequestStatus } from '../../types';
+import { useNetwork } from '../network-provider';
 import { detailsReducer, type DetailsState } from './details-reducer';
 import { initialListState, type ListLoadMode, listReducer, type ListState } from './list-reducer';
 import { prefetchDetails } from './prefetch-details';
@@ -40,9 +43,35 @@ interface PokemonDetailsContextValue {
 
 const PokemonListContext = createContext<PokemonListContextValue | null>(null);
 const PokemonDetailsContext = createContext<PokemonDetailsContextValue | null>(null);
+const ResetSyncedDataContext = createContext<(() => Promise<void>) | null>(null);
 
+/**
+ * Owns the synced Pokedex. Resetting it clears every offline copy and remounts the data
+ * layer, so all in-memory state starts over and the first page is fetched again.
+ */
 export function PokemonDataProvider({ children }: { children: ReactNode }) {
+  const { clearSyncedData } = useDependencies();
+  const [generation, setGeneration] = useState(0);
+
+  const reset = useCallback(async () => {
+    await Promise.all([
+      clearSyncedData.execute(),
+      Image.clearDiskCache(),
+      Image.clearMemoryCache(),
+    ]);
+    setGeneration((value) => value + 1);
+  }, [clearSyncedData]);
+
+  return (
+    <ResetSyncedDataContext value={reset}>
+      <PokemonDataLayer key={generation}>{children}</PokemonDataLayer>
+    </ResetSyncedDataContext>
+  );
+}
+
+function PokemonDataLayer({ children }: { children: ReactNode }) {
   const { getPokemonPage, getPokemonDetail } = useDependencies();
+  const { isOffline: isDeviceOffline } = useNetwork();
   const [list, dispatchList] = useReducer(listReducer, initialListState);
   const [details, dispatchDetails] = useReducer(detailsReducer, {});
   const [savedIds, setSavedIds] = useState<ReadonlySet<number>>(() => new Set());
@@ -143,6 +172,19 @@ export function PokemonDataProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(timer);
   }, [list.isOffline, list.items.length, loadPage]);
 
+  // The connection came back: refresh saved data (or retry a failed first load) right away.
+  useEffect(() => {
+    if (isDeviceOffline) {
+      return;
+    }
+    const { items, isOffline, status } = listRef.current;
+    if (items.length > 0 && isOffline) {
+      void loadPage('revalidate', 0);
+    } else if (items.length === 0 && status === RequestStatus.Error) {
+      void loadPage('initial', 0);
+    }
+  }, [isDeviceOffline, loadPage]);
+
   // Coming back to the app: revalidate if we were offline or the data expired.
   useEffect(() => {
     const subscription = AppState.addEventListener('change', (state) => {
@@ -237,6 +279,14 @@ export function usePokemonDetailsContext(): PokemonDetailsContextValue {
   const context = useContext(PokemonDetailsContext);
   if (!context) {
     throw new Error('usePokemonDetail must be used inside <PokemonDataProvider>');
+  }
+  return context;
+}
+
+export function useResetSyncedData(): () => Promise<void> {
+  const context = useContext(ResetSyncedDataContext);
+  if (!context) {
+    throw new Error('useResetSyncedData must be used inside <PokemonDataProvider>');
   }
   return context;
 }

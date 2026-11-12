@@ -9,4 +9,8 @@ export class RemoteMediaCache implements MediaCache {
   download(_key: string, remoteUrl: string): Promise<string> {
     return Promise.resolve(remoteUrl);
   }
+
+  clear(): Promise<void> {
+    return Promise.resolve();
+  }
 }

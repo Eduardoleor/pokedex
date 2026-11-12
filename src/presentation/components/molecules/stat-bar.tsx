@@ -9,7 +9,7 @@ import { Text } from '../atoms';
 /** Highest base stat in the games (Blissey's HP). */
 const MAX_STAT = 255;
 
-export function StatBar({ stat }: { stat: PokemonStat }) {
+export function StatBar({ stat, color }: { stat: PokemonStat; color?: string }) {
   const { theme } = useTheme();
   const label = formatStatName(stat.name);
   const ratio = Math.min(stat.value / MAX_STAT, 1);
@@ -37,7 +37,7 @@ export function StatBar({ stat }: { stat: PokemonStat }) {
             styles.fill,
             {
               width: `${ratio * 100}%`,
-              backgroundColor: theme.colors.primary,
+              backgroundColor: color ?? theme.colors.primary,
               borderRadius: theme.radius.pill,
             },
           ]}
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   track: {
     flex: 1,
-    height: 8,
+    height: 10,
     overflow: 'hidden',
   },
   fill: {

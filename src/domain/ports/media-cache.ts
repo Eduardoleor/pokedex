@@ -4,4 +4,6 @@ export interface MediaCache {
   find(key: string): Promise<string | null>;
   /** Downloads `remoteUrl`, stores it under `key` and returns the local URI. */
   download(key: string, remoteUrl: string): Promise<string>;
+  /** Deletes every saved file. */
+  clear(): Promise<void>;
 }
