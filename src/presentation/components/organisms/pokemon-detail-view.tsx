@@ -1,5 +1,7 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import type { ReactNode } from 'react';
+
 import type { PokemonDetail } from '@/domain/models';
 
 import { typeColors, useTheme } from '../../theme';
@@ -7,7 +9,13 @@ import { formatDexNumber, formatHeight, formatName, formatWeight } from '../../u
 import { Badge, RemoteImage, Surface, Text } from '../atoms';
 import { InfoItem, StatBar, TypeBadge } from '../molecules';
 
-export function PokemonDetailView({ pokemon }: { pokemon: PokemonDetail }) {
+export interface PokemonDetailViewProps {
+  pokemon: PokemonDetail;
+  /** Rendered under the types, e.g. the cry button. */
+  actions?: ReactNode;
+}
+
+export function PokemonDetailView({ pokemon, actions }: PokemonDetailViewProps) {
   const { theme } = useTheme();
   const name = formatName(pokemon.name);
   const accent = pokemon.types[0]
@@ -44,6 +52,7 @@ export function PokemonDetailView({ pokemon }: { pokemon: PokemonDetail }) {
             <TypeBadge key={type} type={type} />
           ))}
         </View>
+        {actions}
       </View>
 
       <Surface style={styles.row}>
