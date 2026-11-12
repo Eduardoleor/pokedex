@@ -35,7 +35,15 @@
           "imageWidth": 76
         }
       ],
-      "./plugins/with-android-build-speed"
+      "./plugins/with-android-build-speed",
+      [
+        "react-native-audio-api",
+        {
+          "iosBackgroundMode": false,
+          "androidForegroundService": false,
+          "androidPermissions": []
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
