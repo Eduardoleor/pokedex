@@ -1,0 +1,32 @@
+name: Setup
+description: Install Node, pnpm (Corepack) and project dependencies with cache
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version-file: .nvmrc
+
+    # Corepack ships with Node and installs the pnpm version pinned in package.json
+    # (`packageManager`), so no third-party action is needed.
+    - name: Enable pnpm
+      shell: bash
+      run: |
+        corepack enable
+        pnpm --version
+        echo "PNPM_STORE=$(pnpm store path --silent)" >> "$GITHUB_ENV"
+      env:
+        COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+
+    - uses: actions/cache@v4
+      with:
+        path: ${{ env.PNPM_STORE }}
+        key: pnpm-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: pnpm-${{ runner.os }}-
+
+    - name: Install dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+      env:
+        HUSKY: '0'

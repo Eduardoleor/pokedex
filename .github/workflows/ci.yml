@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Branch name
+        env:
+          BRANCH: ${{ github.head_ref }}
+        run: |
+          if ! echo "$BRANCH" | grep -Eq '^(develop|dependabot/.+|(feature|bugfix|release|hotfix)/[a-z0-9._-]+)$'; then
+            echo "::error::Branch \"$BRANCH\" does not follow Git Flow naming."
+            exit 1
+          fi
+
+      - uses: ./.github/actions/setup
+
+      - name: Commit messages
+        run: >
+          pnpm exec commitlint
+          --from ${{ github.event.pull_request.base.sha }}
+          --to ${{ github.event.pull_request.head.sha }}
+          --verbose
+
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm format:check
+
+  android:
+    name: Android build
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup
+
+      - name: Bundle JavaScript
+        run: pnpm expo export --platform android --output-dir dist
+
+      - name: Detect native changes
+        id: native
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          TARGET: ${{ github.base_ref }}
+        run: |
+          pattern='^(package\.json|pnpm-lock\.yaml|app\.json|app\.config\.(js|ts)|eas\.json|assets/|plugins/|\.github/workflows/ci\.yml)'
+          if [ "$TARGET" = "main" ] || git diff --name-only "$BASE" "$HEAD" | grep -Eq "$pattern"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No native-affecting changes; skipping Gradle build." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/setup-java@v4
+        if: steps.native.outputs.changed == 'true'
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Prebuild
+        if: steps.native.outputs.changed == 'true'
+        run: pnpm expo prebuild --platform android --no-install
+
+      - name: Gradle assembleDebug
+        if: steps.native.outputs.changed == 'true'
+        working-directory: android
+        run: ./gradlew :app:assembleDebug -PreactNativeArchitectures=x86_64 --no-daemon
+
+  ios:
+    name: iOS build (WIP)
+    needs: quality
+    # Disabled until the iOS pipeline is defined. macOS runners cost 10x Linux minutes.
+    if: false
+    runs-on: macos-latest
+    steps:
+      - run: echo "iOS build pending"
