@@ -105,6 +105,8 @@ The repository is public, so standard GitHub-hosted runners are free. These limi
 
 ## Repository settings
 
+- **Settings → Actions → General → Actions permissions:** the repository only allows actions created by GitHub or by verified Marketplace creators. Project workflows use GitHub-owned actions only (`checkout`, `setup-node`, `setup-java`, `cache`); pnpm comes from Corepack, pinned by `packageManager` in `package.json`. The only explicit exception is `android-actions/setup-android@*`, required by the generated `eas-build.yml`.
+
 - **Settings → Actions → General → Workflow permissions:** enable **Allow GitHub Actions to create and approve pull requests**. The Release PR workflow needs it.
 - Pull requests opened with `GITHUB_TOKEN` (the release PR) do not trigger other workflows. Its commits were already checked by CI when they reached `develop`, and the merge to `main` triggers the Android build.
 - `eas-build.yml` must exist on the default branch (`main`) before it can be dispatched, so the first Android build happens after the first release is merged.

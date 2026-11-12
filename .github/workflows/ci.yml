@@ -84,9 +84,8 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-
-      - uses: gradle/actions/setup-gradle@v4
-        if: steps.native.outputs.changed == 'true'
+          cache: gradle
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Prebuild
         if: steps.native.outputs.changed == 'true'
