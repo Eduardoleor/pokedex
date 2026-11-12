@@ -67,7 +67,7 @@ jobs:
           python3 -m json.tool /tmp/eas-plan.json
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ steps.plan.outputs.ref || github.ref }}
           # expo-updates derives a runtime version from the git history in some
@@ -100,7 +100,7 @@ jobs:
           PY
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: ${{ steps.plan.outputs.node_version }}
 
@@ -134,7 +134,7 @@ jobs:
 
       - name: Set up JDK
         if: inputs.platform == 'android'
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: '17'
@@ -168,7 +168,7 @@ jobs:
 
       - name: Restore pods cache
         if: inputs.platform == 'ios' && steps.plan.outputs.cache_disabled != 'true'
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ios/Pods
           key: pods-${{ steps.plan.outputs.cache_key }}-${{ hashFiles('ios/Podfile.lock') }}
@@ -722,7 +722,7 @@ jobs:
           echo "### 📲 [Install this build]($PAGE)" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload application archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: application-archive
           path: build/*
@@ -731,7 +731,7 @@ jobs:
 
       - name: Upload Xcode logs
         if: always() && inputs.platform == 'ios'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: xcode-logs
           path: ${{ runner.temp }}/xcodebuild.log
