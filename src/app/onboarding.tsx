@@ -1,28 +1,48 @@
-import { useCallback, useEffect } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button, ProgressBar, Text } from '@/presentation/components/atoms';
+import { Text } from '@/presentation/components/atoms';
 import {
   InstructionsCarousel,
+  OnboardingBackdrop,
   OnboardingHero,
+  PokeballLauncher,
   PokemonStrip,
 } from '@/presentation/components/organisms';
 import { ONBOARDING_STEPS } from '@/presentation/content/onboarding-steps';
-import { useAutoplay, useOnboardingProgress } from '@/presentation/hooks';
+import { useAutoplay, useCryById, useOnboardingProgress } from '@/presentation/hooks';
 import { useOnboarding } from '@/presentation/providers/onboarding-provider';
 import { useTheme } from '@/presentation/theme';
+import { toOnboardingPreview, type ViewHandle } from '@/presentation/types';
 
 export default function OnboardingScreen() {
   const { theme } = useTheme();
   const insets = useSafeAreaInsets();
-  const { complete } = useOnboarding();
-  const { ready, total, isComplete, isOffline } = useOnboardingProgress();
+  const { complete, requestReveal } = useOnboarding();
+  const params = useLocalSearchParams<{ preview?: string }>();
+  const preview = __DEV__ ? toOnboardingPreview(params.preview) : undefined;
+  const { ready, total, isComplete, isOffline } = useOnboardingProgress(preview);
 
   const featured = useAutoplay(ready.length, { intervalMs: 2500 });
   const steps = useAutoplay(ONBOARDING_STEPS.length, { intervalMs: 4500 });
+  const playCry = useCryById();
+  const [capture] = useState(() => new Animated.Value(0));
+  const artworkRef = useRef<ViewHandle>(null);
+
+  const { select: selectFeatured } = featured;
+  const onSelectPokemon = useCallback(
+    (index: number) => {
+      selectFeatured(index);
+      const pokemon = ready[index];
+      if (pokemon) {
+        playCry(pokemon.id);
+      }
+    },
+    [playCry, ready, selectFeatured],
+  );
 
   // While Pokémon are still arriving, follow the newest one unless the user took over.
   const { goTo, isPaused } = featured;
@@ -33,75 +53,80 @@ export default function OnboardingScreen() {
   }, [goTo, isComplete, isPaused, ready.length]);
 
   const start = useCallback(() => {
+    requestReveal();
+    // A preview never marks the onboarding as completed.
+    if (preview) {
+      router.back();
+      return;
+    }
     complete();
     router.replace('/');
-  }, [complete]);
+  }, [complete, preview, requestReveal]);
 
   const status = isOffline
-    ? "You're offline. We'll save your Pokémon as soon as you connect."
-    : isComplete
-      ? `${total} Pokémon saved for offline use`
-      : `Saving Pokémon for offline use · ${ready.length}/${total}`;
+    ? "Offline · we'll save them when you connect"
+    : `${ready.length} of ${total} Pokémon saved`;
 
   return (
     <View style={[styles.screen, { backgroundColor: theme.colors.background }]}>
-      <View style={[styles.half, { paddingTop: insets.top }]}>
-        <OnboardingHero
-          pokemon={ready[featured.index]}
-          placeholder={isOffline ? 'No connection yet' : 'Getting your Pokédex ready…'}
-        />
-        <PokemonStrip
-          items={ready}
-          selectedIndex={featured.index}
-          onSelect={featured.select}
-          onInteraction={featured.pause}
-        />
-      </View>
+      <OnboardingBackdrop pokemon={ready[featured.index]} />
+
+      <OnboardingHero
+        pokemon={ready[featured.index]}
+        placeholder={isOffline ? 'No connection yet' : 'Getting your Pokédex ready…'}
+        topInset={insets.top}
+        bottomInset={theme.spacing.lg}
+        capture={capture}
+        artworkRef={artworkRef}
+      />
 
       <View
         style={[
-          styles.half,
-          styles.bottom,
+          styles.sheet,
           {
             backgroundColor: theme.colors.surface,
-            borderTopLeftRadius: theme.radius.lg,
-            borderTopRightRadius: theme.radius.lg,
-            borderTopColor: theme.colors.band,
-            paddingTop: theme.spacing.xl,
+            borderTopLeftRadius: theme.radius.lg + theme.spacing.sm,
+            borderTopRightRadius: theme.radius.lg + theme.spacing.sm,
+            paddingTop: theme.spacing.sm,
             paddingHorizontal: theme.spacing.lg,
             paddingBottom: insets.bottom + theme.spacing.lg,
-            gap: theme.spacing.lg,
+            gap: theme.spacing.xl,
           },
         ]}
       >
-        <View style={{ gap: theme.spacing.sm }}>
-          <ProgressBar value={ready.length / total} accessibilityLabel={status} />
-          <Text
-            variant="caption"
-            tone="textSecondary"
-            align="center"
-            accessibilityLiveRegion="polite"
-          >
-            {status}
-          </Text>
-        </View>
-
-        <View style={styles.carousel}>
-          <InstructionsCarousel
-            steps={ONBOARDING_STEPS}
-            index={steps.index}
-            onSelect={steps.select}
-            onInteraction={steps.pause}
+        <View style={{ marginHorizontal: -theme.spacing.lg }}>
+          <PokemonStrip
+            items={ready}
+            selectedIndex={featured.index}
+            onSelect={onSelectPokemon}
+            onInteraction={featured.pause}
           />
         </View>
 
-        <Button
-          label={isComplete ? 'Start exploring' : 'Start now'}
-          icon="pokeball"
-          size="large"
-          onPress={start}
-          accessibilityHint="Opens the Pokédex. Saving continues in the background."
+        <InstructionsCarousel
+          steps={ONBOARDING_STEPS}
+          index={steps.index}
+          onSelect={steps.select}
+          onInteraction={steps.pause}
         />
+
+        <PokeballLauncher
+          targetRef={artworkRef}
+          capture={capture}
+          label="Catch your Pokémon!"
+          onThrow={featured.pause}
+          onCaught={start}
+        />
+
+        <Text
+          variant="caption"
+          tone="textMuted"
+          align="center"
+          accessibilityLiveRegion="polite"
+          style={styles.footerText}
+        >
+          {status}
+        </Text>
       </View>
     </View>
   );
@@ -111,14 +136,15 @@ const styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
-  half: {
-    flex: 1,
+  footerText: {
+    fontSize: 11,
+    opacity: 0.7,
   },
-  bottom: {
-    borderTopWidth: 4,
-  },
-  carousel: {
-    flex: 1,
-    justifyContent: 'center',
+  sheet: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 16,
   },
 });

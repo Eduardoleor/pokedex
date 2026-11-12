@@ -3,12 +3,17 @@ import { useCallback } from 'react';
 import { Redirect, router, Stack } from 'expo-router';
 
 import type { PokemonSummary } from '@/domain/models';
+import { IconButton } from '@/presentation/components/atoms';
 import { ConnectionBanner, StatusMessage, ThemeToggle } from '@/presentation/components/molecules';
-import { PokemonGrid, PokemonGridSkeleton } from '@/presentation/components/organisms';
+import {
+  PokeballReveal,
+  PokemonGrid,
+  PokemonGridSkeleton,
+} from '@/presentation/components/organisms';
 import { getErrorMessage } from '@/presentation/errors';
 import { usePokemonList } from '@/presentation/hooks';
 import { useOnboarding } from '@/presentation/providers/onboarding-provider';
-import { OnboardingStatus, RequestStatus } from '@/presentation/types';
+import { OnboardingPreview, OnboardingStatus, RequestStatus } from '@/presentation/types';
 
 export default function PokemonListScreen() {
   const list = usePokemonList();
@@ -27,7 +32,15 @@ export default function PokemonListScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: 'Pokédex', headerRight: () => <ThemeToggle /> }} />
+      <Stack.Screen
+        options={{
+          title: 'Pokédex',
+          // The opening ball covers the whole screen, header included.
+          headerShown: !onboarding.isRevealPending,
+          headerRight: () => <ThemeToggle />,
+          headerLeft: __DEV__ ? () => <OnboardingPreviewButton /> : undefined,
+        }}
+      />
       {list.isLoading && list.items.length === 0 ? (
         <PokemonGridSkeleton />
       ) : list.status === RequestStatus.Error && list.items.length === 0 ? (
@@ -62,6 +75,23 @@ export default function PokemonListScreen() {
           }
         />
       )}
+      {onboarding.isRevealPending ? <PokeballReveal onDone={onboarding.finishReveal} /> : null}
     </>
+  );
+}
+
+/** Development only: replays the onboarding without touching saved data. */
+function OnboardingPreviewButton() {
+  const open = (preview: OnboardingPreview) =>
+    router.push({ pathname: '/onboarding', params: { preview } });
+
+  return (
+    <IconButton
+      icon="pokeball"
+      accessibilityLabel="Preview onboarding"
+      accessibilityHint="Long press to preview it offline"
+      onPress={() => open(OnboardingPreview.Loading)}
+      onLongPress={() => open(OnboardingPreview.Offline)}
+    />
   );
 }

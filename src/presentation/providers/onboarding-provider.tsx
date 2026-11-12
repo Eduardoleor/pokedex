@@ -19,6 +19,10 @@ const COMPLETED_KEY = 'onboarding-completed';
 interface OnboardingContextValue {
   status: OnboardingStatus;
   complete: () => void;
+  /** Set right after the catch so the home screen plays the Poké Ball opening. */
+  isRevealPending: boolean;
+  requestReveal: () => void;
+  finishReveal: () => void;
 }
 
 const OnboardingContext = createContext<OnboardingContextValue | null>(null);
@@ -54,7 +58,14 @@ export function OnboardingProvider({ children }: { children: ReactNode }) {
     preferences.set(COMPLETED_KEY, true).catch(() => undefined);
   }, [preferences]);
 
-  const value = useMemo(() => ({ status, complete }), [status, complete]);
+  const [isRevealPending, setIsRevealPending] = useState(false);
+  const requestReveal = useCallback(() => setIsRevealPending(true), []);
+  const finishReveal = useCallback(() => setIsRevealPending(false), []);
+
+  const value = useMemo(
+    () => ({ status, complete, isRevealPending, requestReveal, finishReveal }),
+    [status, complete, isRevealPending, requestReveal, finishReveal],
+  );
 
   return <OnboardingContext value={value}>{children}</OnboardingContext>;
 }

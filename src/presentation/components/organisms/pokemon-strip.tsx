@@ -44,6 +44,10 @@ export function PokemonStrip({ items, selectedIndex, onSelect, onInteraction }: 
       keyExtractor={(item) => String(item.id)}
       renderItem={renderItem}
       extraData={selectedIndex}
+      // Keep every thumbnail mounted so the pop-in plays once per Pokémon, not on scroll.
+      initialNumToRender={20}
+      windowSize={21}
+      removeClippedSubviews={false}
       showsHorizontalScrollIndicator={false}
       getItemLayout={(_, index) => ({ length: itemSize, offset: itemSize * index, index })}
       onScrollBeginDrag={onInteraction}
@@ -51,6 +55,9 @@ export function PokemonStrip({ items, selectedIndex, onSelect, onInteraction }: 
       // the extra room fits the selected thumbnail's scale.
       style={{ flexGrow: 0, height: THUMB_SIZE * 1.12 + theme.spacing.md * 2 }}
       contentContainerStyle={{
+        // Centers the thumbnails while they fit (wide screens, web); scrolls once they don't.
+        flexGrow: 1,
+        justifyContent: 'center',
         gap: theme.spacing.md,
         paddingHorizontal: theme.spacing.xl,
         paddingVertical: theme.spacing.md,

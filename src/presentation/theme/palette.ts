@@ -10,6 +10,13 @@ export const pokeball = {
   white: '#FFFFFF',
 } as const;
 
+/** Colors of the Pokémon wordmark, used for playful call-to-action text. */
+export const wordmark = {
+  yellow: '#FFCB05',
+  blue: '#2A75BB',
+  deepBlue: '#1D3E7A',
+} as const;
+
 export interface ColorPalette {
   background: string;
   surface: string;
