@@ -41,7 +41,8 @@ src/
     errors/        AppError, ErrorKind, toAppError
   application/
     cache/         CachePolicy (5-day TTL), cachedQuery (stale-while-revalidate)
-    use-cases/     GetPokemonPage, GetPokemonDetail, PlayPokemonCry
+    use-cases/     GetPokemonPage, GetPokemonDetail, GetPokemonIdsByType, PlayPokemonCry,
+                   ClearSyncedData
   infrastructure/
     http/          FetchHttpClient and its types
     pokeapi/       PokeApiPokemonRepository, dtos/, mappers/, config
@@ -51,11 +52,11 @@ src/
     providers/     PokemonDataProvider (list + details contexts, background sync)
     theme/         ThemeProvider, palettes (light/dark), tokens
     navigation/    NavigationTheme (headers and status bar follow the theme)
-    hooks/         usePokemonList, usePokemonDetail
+    hooks/         usePokemonList, usePokemonDetail, usePacedReveal, useOnboardingProgress
     components/    atoms/ molecules/ organisms/ (atomic design)
     errors/        getErrorMessage (ErrorKind → user-facing copy)
     types/         RequestStatus, ThemePreference
-    utils/         formatters (names, dex number, units, relative time)
+    utils/         formatters, search, type effectiveness, haptics, trainer stats
   di/              createDependencies, DependenciesProvider, useDependencies
   app/             _layout.tsx, routes
 ```
@@ -140,7 +141,7 @@ PokéAPI exposes `cries.latest` for every Pokémon. Most files are **Ogg Vorbis*
 | `PlayPokemonCry`       | Use case: downloads the cry once through `MediaCache`, then plays it through `SoundPlayer`             |
 | `FileSystemMediaCache` | Saves the file in the documents directory; later plays work offline                                    |
 | `AudioApiSoundPlayer`  | `react-native-audio-api`: decodes in native code (OS decoder, then miniaudio + libvorbis) and plays it |
-| `CryButton`            | Loading, playing and error states; disabled with a hint when offline and the cry was never downloaded  |
+| `CryIconButton`        | Loading, playing and error states; disabled with a hint when offline and the cry was never downloaded  |
 
 Cries are downloaded only when the user taps the button, never by the background prefetch, to avoid spending data on audio nobody asked for. The audio session uses the `playback` category so a cry is heard with the silent switch on, and the library's config plugin is set without background audio or foreground-service permissions.
 
@@ -160,6 +161,25 @@ Shown once, on first launch, and doubles as the first load:
 - Catch sequence (`PokeballLauncher`, React Native `Animated` + responder events): the ball flies to the featured Pokémon, opens with a glow, pulls it in, wobbles three times while growing, bursts with sparks, then hands over to `GrowingBall`, a ball built from plain views that grows to fill the screen while sliding to its center; the home screen splits a full-screen ball open (`PokeballReveal`). The ball is not scaled as an image: growing it through layout redraws it at its real size on every frame, so it never pixelates. Both share their proportions from `pokeball-geometry.ts` so they line up. The Poké Ball is an SVG drawn with `react-native-svg`. "Reduce motion" skips the animation.
 - Development only: the Poké Ball button in the list header replays the onboarding (tap: simulated loading, long press: offline) without touching saved data.
 
+## Error states
+
+Every failure has a screen and a way out; the full table is in the [README](../README.md#error-handling). The pieces:
+
+- `getErrorMessage` maps each `ErrorKind` to user-facing copy.
+- `StatusMessage` is the shared full-screen state (icon, title, reason, retry button).
+- `ErrorBoundary` exported from `src/app/_layout.tsx` renders `CrashScreen` when a screen throws. It uses no provider and no shared component, because the crash may have come from one of them.
+- `+not-found.tsx` handles unknown routes and stale deep links.
+- `RemoteImage` falls back to a Poké Ball when an image can neither be downloaded nor found on disk.
+- The onboarding tells "no internet" (`isOffline`) apart from "the download failed" (server error or timeout).
+
+## Haptics
+
+`src/presentation/utils/haptics.ts` wraps `expo-haptics` (`selection`, `light`, `medium`, `heavy`, `success`, `warning`, `error`). Calls are fire-and-forget, swallow errors and do nothing on the web. `PokeballLauncher` fires them from inside its `Animated` sequence through a `cue()` step, so each wobble, the click and the catch are felt exactly when they are seen.
+
+## Paced reveal
+
+`usePacedReveal` shows items one at a time even when all of them are already available. The onboarding uses it so a warm cache never makes the thumbnails snap into place; it is skipped when "reduce motion" is on.
+
 ## Theme
 
 `ThemeProvider` resolves the active scheme from the user preference (`system`, `light`, `dark`; saved in the `preferences` store) and the OS setting. Components only read tokens from `useTheme()`:
@@ -174,11 +194,11 @@ Shown once, on first launch, and doubles as the first load:
 
 All components are built from React Native primitives (`View`, `Text`, `Pressable`, `FlatList`, `Animated`), themed through `useTheme()` and labeled for screen readers.
 
-| Level       | Components                                                                                        |
-| ----------- | ------------------------------------------------------------------------------------------------- |
-| `atoms`     | `Text`, `Icon`, `Button`, `IconButton`, `Spinner`, `Surface`, `Badge`, `Skeleton`, `RemoteImage`  |
-| `molecules` | `TypeBadge`, `StatBar`, `InfoItem`, `StatusMessage`, `ConnectionBanner`, `ThemeToggle`            |
-| `organisms` | `PokemonCard`, `PokemonGrid`, `PokemonGridSkeleton`, `PokemonDetailView`, `PokemonDetailSkeleton` |
+| Level       | Components                                                                                                                    |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `atoms`     | `Text`, `Icon`, `Button`, `IconButton`, `Spinner`, `Surface`, `Badge`, `Skeleton`, `RemoteImage`                              |
+| `molecules` | `TypeBadge`, `StatBar`, `StatusMessage`, `ConnectionBanner`, `OfflineSnackbar`, `ThemePicker`, `FilterChips`, `CryIconButton` |
+| `organisms` | `PokemonBrowser`, `PokemonGrid`, `PokemonDetailView`, `PokeballLauncher`, `CatchPanel`, `CrashScreen`, skeletons              |
 
 `templates` and `pages` are intentionally left out: with two screens there is no repeated layout, and Expo Router routes already play the role of pages.
 
