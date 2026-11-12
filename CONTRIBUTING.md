@@ -61,11 +61,11 @@ The header is limited to 100 characters. The commit type also decides the sectio
 
 ## Git hooks
 
-| Hook         | What it does                                                        |
-| ------------ | ------------------------------------------------------------------- |
-| `pre-commit` | Blocks commits on `main` and runs ESLint + Prettier on staged files |
-| `commit-msg` | Validates the message with commitlint                               |
-| `pre-push`   | Checks the branch name against Git Flow and runs `pnpm validate`    |
+| Hook         | What it does                                                                                 |
+| ------------ | -------------------------------------------------------------------------------------------- |
+| `pre-commit` | Blocks commits on `main`, runs ESLint + Prettier on staged files and type-checks the project |
+| `commit-msg` | Validates the message with commitlint                                                        |
+| `pre-push`   | Checks the branch name against Git Flow and runs `pnpm validate`                             |
 
 If a hook fails, fix the problem. Do not use `--no-verify`; CI runs the same checks.
 
@@ -75,7 +75,9 @@ If a hook fails, fix the problem. Do not use `--no-verify`; CI runs the same che
 - Imports are grouped and sorted automatically: React / React Native, external packages, `@/` alias, relative.
 - Use the `@/` alias for anything inside `src/`.
 - Use `import type` for type-only imports.
-- No `any`, no non-null assertions (`!`) and no unhandled promises.
+- No `any`, explicit or implicit: every variable is initialized or typed where it is declared, and `any` values cannot be assigned, called or returned (`no-unsafe-*`).
+- No non-null assertions (`!`) and no unhandled promises.
+- A lint or type error blocks the commit; nothing is pushed with known errors.
 - `console.log` does not reach `develop`; `console.warn` and `console.error` are allowed.
 
 ## Before opening a PR
