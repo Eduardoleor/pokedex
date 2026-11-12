@@ -71,34 +71,37 @@ Full description, folder map and data flow: [docs/architecture.md](docs/architec
 - Detail screen with artwork, types, height, weight, base experience, abilities and base stats.
 - Light and dark mode, following the system or chosen from the header toggle.
 - Offline support: saved data opens instantly, a 5-day cache keeps it fresh in the background, and details are saved ahead of time.
+- Battle cry on the detail screen, downloaded on first play and available offline afterwards (iOS and Android).
 - Loading skeletons, empty and error states with retry, screen reader labels.
 
 ## Technical decisions
 
-| Decision                                    | Why                                                                                                                                                           |
-| ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Clean Architecture (ports & adapters)       | Business rules are independent from React, `fetch` and storage; adapters can be swapped or faked in tests                                                     |
-| Native `fetch` wrapped in `FetchHttpClient` | No HTTP library needed; timeout, cancellation, retries and error normalization in one place                                                                   |
-| React Context + `useReducer` for state      | Enough for two screens; no state library                                                                                                                      |
-| File-based cache with a 5-day TTL           | React Native ships no storage API and AsyncStorage is a community library. `expo-file-system` is part of the Expo SDK; JSON files fit small, read-mostly data |
-| Stale-while-revalidate                      | Instant screens, background refresh, no data lost when the network fails                                                                                      |
-| Connectivity inferred from requests         | Avoids a network-status library; a failed request is the signal that matters                                                                                  |
-| Own SVG icon set                            | Unicode glyphs render differently per platform; `react-native-svg` is part of the Expo SDK and ships in Expo Go                                               |
-| Hand-made atomic components                 | Required by the challenge; one theme source keeps light/dark consistent                                                                                       |
+| Decision                                                       | Why                                                                                                                                                                      |
+| -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Clean Architecture (ports & adapters)                          | Business rules are independent from React, `fetch` and storage; adapters can be swapped or faked in tests                                                                |
+| Native `fetch` wrapped in `FetchHttpClient`                    | No HTTP library needed; timeout, cancellation, retries and error normalization in one place                                                                              |
+| React Context + `useReducer` for state                         | Enough for two screens; no state library                                                                                                                                 |
+| File-based cache with a 5-day TTL                              | React Native ships no storage API and AsyncStorage is a community library. `expo-file-system` is part of the Expo SDK; JSON files fit small, read-mostly data            |
+| Stale-while-revalidate                                         | Instant screens, background refresh, no data lost when the network fails                                                                                                 |
+| Connectivity inferred from requests                            | Avoids a network-status library; a failed request is the signal that matters                                                                                             |
+| Own SVG icon set                                               | Unicode glyphs render differently per platform; `react-native-svg` is part of the Expo SDK and ships in Expo Go                                                          |
+| `react-native-audio-api` for cries (the only non-Expo library) | PokéAPI serves cries as Ogg Vorbis, which iOS cannot decode natively. This library decodes in native code (libvorbis) on both platforms; React Native ships no audio API |
+| Hand-made atomic components                                    | Required by the challenge; one theme source keeps light/dark consistent                                                                                                  |
 
 Details: [docs/architecture.md](docs/architecture.md).
 
 ## Libraries
 
-The app uses React Native and the Expo SDK only. Packages that matter for the solution:
+The app uses React Native and the Expo SDK, plus one community library for audio. Packages that matter for the solution:
 
-| Package            | Use                                                              |
-| ------------------ | ---------------------------------------------------------------- |
-| `expo-router`      | File-based navigation (list → detail)                            |
-| `expo-file-system` | Persistent offline cache                                         |
-| `expo-image`       | Remote images with disk cache (artwork available offline)        |
-| `react-native-svg` | Renders the app's own SVG icon set identically on both platforms |
-| `expo-status-bar`  | Status bar style per theme                                       |
+| Package                  | Use                                                              |
+| ------------------------ | ---------------------------------------------------------------- |
+| `expo-router`            | File-based navigation (list → detail)                            |
+| `expo-file-system`       | Persistent offline cache                                         |
+| `expo-image`             | Remote images with disk cache (artwork available offline)        |
+| `react-native-svg`       | Renders the app's own SVG icon set identically on both platforms |
+| `react-native-audio-api` | Decodes and plays Pokémon cries (Ogg Vorbis) on iOS and Android  |
+| `expo-status-bar`        | Status bar style per theme                                       |
 
 Dev tooling (ESLint, Prettier, Husky, commitlint, `@expo/fingerprint`) is listed in [CONTRIBUTING.md](CONTRIBUTING.md) and [docs/ci-cd.md](docs/ci-cd.md).
 
