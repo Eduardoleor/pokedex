@@ -8,9 +8,16 @@ on:
       - '**.md'
       - 'docs/**'
       - 'LICENSE'
+  # Runs on develop so its caches (fingerprint marker, ccache) are visible to every PR.
+  push:
+    branches: [develop]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
@@ -19,7 +26,7 @@ permissions:
 jobs:
   quality:
     name: Quality
-    if: github.event.pull_request.draft == false
+    if: github.event_name == 'push' || github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -28,6 +35,7 @@ jobs:
           fetch-depth: 0
 
       - name: Branch name
+        if: github.event_name == 'pull_request'
         env:
           BRANCH: ${{ github.head_ref }}
         run: |
@@ -39,6 +47,7 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Commit messages
+        if: github.event_name == 'pull_request'
         run: >
           pnpm exec commitlint
           --from ${{ github.event.pull_request.base.sha }}
@@ -56,45 +65,82 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
 
       - uses: ./.github/actions/setup
 
       - name: Bundle JavaScript
         run: pnpm expo export --platform android --output-dir dist
 
-      - name: Detect native changes
-        id: native
-        env:
-          BASE: ${{ github.event.pull_request.base.sha }}
-          HEAD: ${{ github.event.pull_request.head.sha }}
-          TARGET: ${{ github.base_ref }}
+      # The fingerprint hashes everything that affects the native project (native deps,
+      # app config, config plugins). If this exact fingerprint already compiled, Gradle is skipped.
+      - name: Native fingerprint
+        id: fingerprint
         run: |
-          pattern='^(package\.json|pnpm-lock\.yaml|app\.json|app\.config\.(js|ts)|eas\.json|assets/|plugins/|\.github/workflows/ci\.yml)'
-          if [ "$TARGET" = "main" ] || git diff --name-only "$BASE" "$HEAD" | grep -Eq "$pattern"; then
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No native-affecting changes; skipping Gradle build." >> "$GITHUB_STEP_SUMMARY"
-          fi
+          hash="$(pnpm exec fingerprint fingerprint:generate --platform android | jq -r .hash)"
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+          echo "Native fingerprint: \`$hash\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check previous build
+        id: built
+        uses: actions/cache/restore@v6
+        with:
+          path: .android-built
+          key: android-built-${{ steps.fingerprint.outputs.hash }}-${{ hashFiles('.github/workflows/ci.yml') }}
+          lookup-only: true
+
+      - name: Report skip
+        if: steps.built.outputs.cache-hit == 'true'
+        run: echo "Fingerprint already built; skipping Gradle." >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/setup-java@v6
-        if: steps.native.outputs.changed == 'true'
+        if: steps.built.outputs.cache-hit != 'true'
         with:
           distribution: temurin
           java-version: '17'
           cache: gradle
           cache-dependency-path: pnpm-lock.yaml
 
+      - name: Install ccache
+        if: steps.built.outputs.cache-hit != 'true'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ccache
+
+      - uses: actions/cache@v6
+        if: steps.built.outputs.cache-hit != 'true'
+        with:
+          path: ~/.cache/ccache
+          key: ccache-x86_64-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.run_id }}
+          restore-keys: |
+            ccache-x86_64-${{ hashFiles('pnpm-lock.yaml') }}-
+            ccache-x86_64-
+
       - name: Prebuild
-        if: steps.native.outputs.changed == 'true'
+        if: steps.built.outputs.cache-hit != 'true'
         run: pnpm expo prebuild --platform android --no-install
 
       - name: Gradle assembleDebug
-        if: steps.native.outputs.changed == 'true'
+        if: steps.built.outputs.cache-hit != 'true'
         working-directory: android
-        run: ./gradlew :app:assembleDebug -PreactNativeArchitectures=x86_64 --no-daemon
+        env:
+          CMAKE_C_COMPILER_LAUNCHER: ccache
+          CMAKE_CXX_COMPILER_LAUNCHER: ccache
+          CCACHE_BASEDIR: ${{ github.workspace }}
+          CCACHE_NOHASHDIR: 'true'
+          CCACHE_COMPILERCHECK: content
+          CCACHE_SLOPPINESS: pch_defines,time_macros,include_file_mtime,include_file_ctime
+          CCACHE_MAXSIZE: 2G
+        run: |
+          ./gradlew :app:assembleDebug -PreactNativeArchitectures=x86_64 --no-daemon
+          ccache --show-stats
+
+      - name: Mark fingerprint as built
+        if: steps.built.outputs.cache-hit != 'true'
+        run: mkdir -p .android-built && touch .android-built/ok
+
+      - uses: actions/cache/save@v6
+        if: steps.built.outputs.cache-hit != 'true'
+        with:
+          path: .android-built
+          key: android-built-${{ steps.fingerprint.outputs.hash }}-${{ hashFiles('.github/workflows/ci.yml') }}
 
   ios:
     name: iOS build (WIP)

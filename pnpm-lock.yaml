@@ -84,6 +84,9 @@ importers:
       '@commitlint/config-conventional':
         specifier: 21.2.4
         version: 21.2.4
+      '@expo/fingerprint':
+        specifier: 0.21.10
+        version: 0.21.10
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
