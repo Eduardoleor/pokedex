@@ -1,4 +1,9 @@
-import { type AudioBufferSourceNode, AudioContext, AudioManager } from 'react-native-audio-api';
+import {
+  type AudioBuffer,
+  type AudioBufferSourceNode,
+  AudioContext,
+  AudioManager,
+} from 'react-native-audio-api';
 
 import { AppError, ErrorKind } from '@/domain/errors';
 import type { SoundPlayer } from '@/domain/ports';
@@ -15,15 +20,8 @@ export class AudioApiSoundPlayer implements SoundPlayer {
   async play(uri: string): Promise<void> {
     this.stop();
     const context = this.getContext();
+    const buffer = await this.decode(context, uri);
 
-    let buffer;
-    try {
-      buffer = await context.decodeAudioData(uri);
-    } catch (error) {
-      throw new AppError(ErrorKind.InvalidResponse, 'The sound could not be decoded', {
-        originalError: error,
-      });
-    }
     if (context.state === 'suspended') {
       await context.resume();
     }
@@ -58,6 +56,16 @@ export class AudioApiSoundPlayer implements SoundPlayer {
       source.stop();
     }
     settle?.();
+  }
+
+  private async decode(context: AudioContext, uri: string): Promise<AudioBuffer> {
+    try {
+      return await context.decodeAudioData(uri);
+    } catch (error) {
+      throw new AppError(ErrorKind.InvalidResponse, 'The sound could not be decoded', {
+        originalError: error,
+      });
+    }
   }
 
   private getContext(): AudioContext {
