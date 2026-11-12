@@ -25,4 +25,6 @@ export interface PokemonDetail extends PokemonSummary {
   /** Kilograms */
   weight: number;
   baseExperience: number | null;
+  /** Battle cry audio (Ogg Vorbis, occasionally MP3). `null` when PokéAPI has none. */
+  cryUrl: string | null;
 }

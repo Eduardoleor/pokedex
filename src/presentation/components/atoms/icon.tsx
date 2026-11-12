@@ -50,6 +50,13 @@ const ICONS = {
       <Path d="M20 4v5h-5" />
     </>
   ),
+  volume: () => (
+    <>
+      <Path d="M11 5 6.5 9H3v6h3.5l4.5 4V5Z" />
+      <Path d="M15.5 8.5a5 5 0 0 1 0 7" />
+      <Path d="M18.5 5.5a9.2 9.2 0 0 1 0 13" />
+    </>
+  ),
   search: () => (
     <>
       <Circle cx={11} cy={11} r={7} />
